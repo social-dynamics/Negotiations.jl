@@ -2,6 +2,7 @@ using Agents
 using LightGraphs
 using StatsBase
 using Random
+using CSV
 
 # The agent type
 @agent Negotiator{} Agents.GraphAgent begin
@@ -51,6 +52,9 @@ end
 GROUPSIZE = 10
 space = Agents.GraphSpace(LightGraphs.complete_graph(GROUPSIZE))
 model = Agents.ABM(Negotiator, space)
+
+# TO DO: use actual data to initialize agents
+data = CSV.read(joinpath("data", "data_wide.csv"), DataFrame)
 
 # Setup negotiator groups
 spd = [Negotiator(i, i, zeros(Int, 38)) for i in 1:GROUPSIZE]
