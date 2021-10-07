@@ -3,6 +3,7 @@ using LightGraphs
 using StatsBase
 using Random
 using CSV
+using DataFrames
 
 # The agent type
 @agent Negotiator{} Agents.GraphAgent begin
