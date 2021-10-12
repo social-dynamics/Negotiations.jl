@@ -82,11 +82,13 @@ function setup_negotiators(groupsize, party_names, data)
     return negotiators
 end
 
+# Get all n-combinations of the parties
 function get_party_combinations(party_names, n=2)
     combs = combinations(party_names, n)
     return combs
 end
 
+# Run given sequence of party negotiations
 function meta_run!(negotiators, party_combinations)
     init_negotiators = DataFrame(deepcopy(negotiators))
     init_negotiators[!, :step] .= 0
@@ -101,23 +103,19 @@ function meta_run!(negotiators, party_combinations)
     return results
 end
 
-# TO DO: use actual data to initialize agents
+# Use actual data to initialize agents
 party_names = ["SPD", "CDU_CSU", "GRUENE", "FDP", "AfD", "DIE_LINKE", "SSW"]
 data = CSV.read(joinpath("data", "data_wide.csv"), DataFrame)
 data = filter(data -> data.party_shorthand in party_names, data)
 
+# Test
 negotiators = setup_negotiators(1, party_names, data)
 combs = get_party_combinations(party_names, 2)
 res = meta_run!(negotiators, combs)
 
-
-# Test
-# negotiation(negotiators, ["GRUENE", "FDP"])
-
-
 # TODO:
-#   * write a meta run! function that tracks the changes in the negotiator list
 #   * refactor
+#   * use "ordinal" axelrod
 
 
 
