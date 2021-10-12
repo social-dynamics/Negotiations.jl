@@ -60,7 +60,7 @@ end
 data = CSV.read(joinpath("data", "data_wide.csv"), DataFrame)
 
 # Setup negotiator groups
-party_names = ["spd", "cdu", "gruene", "fdp", "afd", "linke", "ssw"]
+party_names = ["SPD", "CDU_CSU", "GRUENE", "FDP", "AfD", "DIE_LINKE", "SSW"]
 GROUPSIZE = 10
 n_agents = length(party_names) * GROUPSIZE
 party_id = 1
@@ -75,8 +75,16 @@ for party_id in 1:length(party_names)
     end
 end
 
+function get_party_opinions(party_name, data)
+    opinions = filter(data -> data.party_shorthand == party_name, data)
+    opinions = collect(data[1, 3:40])
+    return opinions
+end
+
+data = filter(data -> data.party_shorthand in party_names, data)
+
 # Test
-# negotiation(negotiators, ["gruene", "fdp"])
+# negotiation(negotiators, ["GRUENE", "FDP"])
 
 
 # TODO:
