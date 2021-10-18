@@ -17,22 +17,26 @@ function agent_step!(agent, model)
     return agent
 end
 
+# Ordinal similarity
+function similarity(agents)
+    sum(abs.(agents[1].opinions .- agents[2].opinions)) / (2 * length(agents[1].opinions))
+end
+
 # Axelrod rule
 function assimilate!(agent1, agent2)
-    similarity = sum(agent1.opinions .== agent2.opinions) / length(agent1.opinions)
-    if Random.rand() < similarity
-        dim_to_switch = Random.rand(1:length(agent1.opinions))  # TO DO: choose at random
-        agent1.opinions[dim_to_switch] = copy(agent2.opinions[dim_to_switch])  # TO DO: implement ordinal Axelrod
-    end
+    i = Random.rand(1:length(agent1.opinions))
+    agent1.opinions[i] = sign(agent1.opinions[i] + agent2.opinions[i])
     return agent1, agent2
 end
 
 # Run once every step to update model parameters
 function model_step!(model::Agents.ABM)
-    for i in 1:100000
+    for i in 1:100000  # convergence criterium
         agent1 = random_agent(model)
         agent2 = random_agent(model)
-        assimilate!(agent1, agent2)
+        if Random.rand() < similarity([agent1, agent2])
+            assimilate!(agent1, agent2)
+        end
     end
     return model
 end
@@ -104,7 +108,8 @@ function meta_run!(negotiators, party_combinations)
 end
 
 # Use actual data to initialize agents
-party_names = ["SPD", "CDU_CSU", "GRUENE", "FDP", "AfD", "DIE_LINKE", "SSW"]
+party_names_all = ["SPD", "CDU_CSU", "GRUENE", "FDP", "AfD", "DIE_LINKE", "SSW"]
+party_names = ["SPD", "CDU_CSU", "GRUENE", "FDP"]
 data = CSV.read(joinpath("data", "data_wide.csv"), DataFrame)
 data = filter(data -> data.party_shorthand in party_names, data)
 
@@ -115,8 +120,34 @@ res = meta_run!(negotiators, combs)
 
 # TODO:
 #   * refactor
-#   * use "ordinal" axelrod
+#   * aim at minimal coalition
+#       * seats in Bundestag as "currency"
+#   * add stubbornness (only move by one in every dimension)
 
+# TODO: fix bug
+function can_form_government(parties, negotiators, seats)
+    candidates = filter(negotiators -> negotiators.party in parties, negotiators)
+    sum_seats = 0
+    for (k, v) in seats
+        if k in parties
+            sum_seats += v
+        end
+    end
+    has_majority = sum_seats >= MAJORITY_REQUIREMENT ? true : false
+    combs = collect(combinations(candidates, 2))
+    has_consensus = (sum(similarity.(combs))) / length(combs)) == 1.
+    return has_majority & has_consensus
+end
 
+ALL_SEATS = 736
+MAJORITY_REQUIREMENT = (736 / 2) + 1
 
-
+seats = Dict(
+    "SPD" => 206,
+    "GRUENE" => 118,
+    "FDP" => 92,
+    "CDU_CSU" => 197,
+    "AfD" => 83,
+    "SSW" => 1,
+    "LINKE" => 39
+)
