@@ -6,6 +6,7 @@ using CSV
 using DataFrames
 using Combinatorics
 
+# Parliament specifications
 ALL_SEATS = 736
 MAJORITY_REQUIREMENT = (736 / 2) + 1
 
@@ -19,16 +20,19 @@ seats = Dict(
     "LINKE" => 39
 )
 
+# MODELS
+
 # The agent type
 @agent Negotiator{} Agents.GraphAgent begin
     opinions::AbstractArray
     party::String
 end
 
+# SETUP FUNCTIONS
+
 # Setup negotiator groups
 function setup_negotiators(groupsize, party_names, data)
     n_agents = length(party_names) * groupsize
-    party_id = 1
     negotiators = []
     for party_id in 1:length(party_names)
         curr_party_opinions = get_party_opinions(party_names[party_id], data)
@@ -125,7 +129,7 @@ function similarity(opinions::AbstractArray)
 end
 
 # TODO: fix bug
-function can_form_government(parties, negotiators, seats)
+function can_form_government(parties, negotiators, seats, consensus_requirement)
     candidates = filter(negotiators -> negotiators.party in parties, negotiators)
     sum_seats = 0
     for (k, v) in seats
@@ -138,7 +142,7 @@ function can_form_government(parties, negotiators, seats)
     # has_consensus = (sum(similarity.(combs)) / length(combs)) == 1.
     party_consensus_opinions = [party_consensus(negotiators, p) for p in parties]
     sims = [similarity(o) for o in collect(combinations(party_consensus_opinions, 2))]
-    has_consensus = reduce(&, sims .> 0.9)
+    has_consensus = reduce(&, sims .> consensus_requirement)
     return has_majority & has_consensus
 end
 
