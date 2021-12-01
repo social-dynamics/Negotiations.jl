@@ -46,3 +46,6 @@ vignettes/*.pdf
 
 # individual VSCode settings
 .vscode/settings.json
+
+
+Manifest.toml
