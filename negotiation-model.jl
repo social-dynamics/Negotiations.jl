@@ -1,5 +1,5 @@
 using Agents
-using LightGraphs
+using Graphs
 using StatsBase
 using Random
 using CSV
@@ -75,7 +75,7 @@ end
 function negotiation!(negotiators, parties::AbstractArray)
     participants = filter(negotiator -> negotiator.party in parties, negotiators)
     n_participants = length(participants)
-    space = Agents.GraphSpace(LightGraphs.complete_graph(n_participants))
+    space = Agents.GraphSpace(Graphs.complete_graph(n_participants))
     model = Agents.ABM(Negotiator, space)
     populate!(model, participants)
     adata, mdata = run!(model, agent_step!, model_step!, 1, adata=[:opinions, :party], obtainer=deepcopy)
