@@ -44,4 +44,5 @@ vignettes/*.pdf
 *.html
 
 
-
+# individual VSCode settings
+.vscode/settings.json
