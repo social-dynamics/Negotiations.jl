@@ -1,0 +1,15 @@
+---
+all_seats: 736
+majority_requirement: 369
+seat_distribution:
+    SPD: 206
+    GRUENE: 118
+    FDP: 92
+    CDU_CSU: 197
+    AfD: 83
+    SSW: 1
+    LINKE: 39
+party_names_all: ["SPD", "CDU_CSU", "GRUENE", "FDP", "AfD", "DIE_LINKE", "SSW"]
+party_names: ["SPD", "CDU_CSU", "GRUENE", "FDP"]
+data_path: "data/data_wide.csv"
+---

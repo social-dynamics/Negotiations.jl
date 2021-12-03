@@ -1,16 +1,14 @@
-using CSV
-using DataFrames
-using Clustering
-using UnicodePlots
+using YAML
+include("src/Negotiations.jl")
 
-data = CSV.read(joinpath("data", "data_wide.csv"), DataFrame)
-m = Matrix(data[:, 3:end])
-clus = hclust(m)
-m_ordered = m[clus.order, :]
-m_dist = zeros(nrow(data), nrow(data))
-for i in 1:nrow(data)
-    for j in 1:nrow(data)
-        m_dist[i, j] = hamming(m[i, :], m[j, :])
-    end
-end
+config = Negotiations.Config("config.yaml")
 
+# Parliament specifications
+ALL_SEATS = config.all_seats
+MAJORITY_REQUIREMENT = config.majority_requirement
+seats = config.seat_distribution
+
+# Test
+negotiators = Negotiations.setup_negotiators(10, config)
+combs = Negotiations.get_party_combinations(config.party_names, 2)
+res = Negotiations.meta_run!(negotiators, combs)

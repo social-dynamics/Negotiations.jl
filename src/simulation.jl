@@ -1,46 +1,16 @@
-using Agents
-using Graphs
-using StatsBase
-using Random
-using CSV
-using DataFrames
-using Combinatorics
-
-# Parliament specifications
-ALL_SEATS = 736
-MAJORITY_REQUIREMENT = (736 / 2) + 1
-
-seats = Dict(
-    "SPD" => 206,
-    "GRUENE" => 118,
-    "FDP" => 92,
-    "CDU_CSU" => 197,
-    "AfD" => 83,
-    "SSW" => 1,
-    "LINKE" => 39
-)
-
-# MODELS
-
-# The agent type
-@agent Negotiator{} Agents.GraphAgent begin
-    opinions::AbstractArray
-    party::String
-end
-
-# SETUP FUNCTIONS
-
-# Setup negotiator groups
-function setup_negotiators(groupsize, party_names, data)
-    n_agents = length(party_names) * groupsize
+function setup_negotiators(groupsize, config)
+    n_agents = length(config.party_names) * groupsize
     negotiators = []
-    for party_id in 1:length(party_names)
-        curr_party_opinions = get_party_opinions(party_names[party_id], data)
+    for party_id in 1:length(config.party_names)
+        curr_party_opinions = get_party_opinions(
+            config.party_names[party_id],
+            config.opinion_data
+        )
         for j in 1:groupsize
             agent = Negotiator((party_id - 1) * groupsize + j,
                                party_id * j,
                                deepcopy(curr_party_opinions),
-                               party_names[party_id])
+                               config.party_names[party_id])
             push!(negotiators, agent)
         end
     end
@@ -152,26 +122,3 @@ function party_consensus(negotiators, party)
     party_consensus_opinions = [StatsBase.mode([o[i] for o in negotiator_opinions]) for i in 1:length(negotiator_opinions[1])]
     return party_consensus_opinions
 end
-
-# get party consensus
-# compute similarity of all involved parties
-# test if > threshold (simplest: 1 => completely equal)
-
-
-# Use actual data to initialize agents
-party_names_all = ["SPD", "CDU_CSU", "GRUENE", "FDP", "AfD", "DIE_LINKE", "SSW"]
-party_names = ["SPD", "CDU_CSU", "GRUENE", "FDP"]
-data = CSV.read(joinpath("data", "data_wide.csv"), DataFrame)
-data = filter(data -> data.party_shorthand in party_names, data)
-
-# Test
-negotiators = setup_negotiators(10, party_names, data)
-combs = get_party_combinations(party_names, 2)
-res = meta_run!(negotiators, combs)
-
-# TODO:
-#   * refactor
-#   * aim at minimal coalition
-#       * seats in Bundestag as "currency"
-#   * add stubbornness (only move by one in every dimension)
-

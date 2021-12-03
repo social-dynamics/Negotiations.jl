@@ -20,3 +20,13 @@
 
     * opinion variability within group  // DISCUSS -> probably later
 
+
+
+# Moved here from Code
+
+TODO:
+  * refactor
+  * aim at minimal coalition
+      * seats in Bundestag as "currency"
+  * add stubbornness (only move by one in every dimension)
+
