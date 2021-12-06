@@ -1,16 +1,28 @@
-function setup_negotiators(groupsize, config)
-    n_agents = length(config.party_names) * groupsize
+# Populate a model with agents
+function populate!(model::Agents.ABM, negotiator_group::AbstractArray)
+    negotiator_group = vcat(negotiator_group...)
+    for i in 1:nv(model.space.graph)
+        add_agent!(negotiator_group[i], i, model)
+    end
+    return model
+end
+
+
+function setup_negotiators(config)
+    n_agents = length(config.party_names) * config.groupsize
     negotiators = []
     for party_id in 1:length(config.party_names)
         curr_party_opinions = get_party_opinions(
             config.party_names[party_id],
             config.opinion_data
         )
-        for j in 1:groupsize
-            agent = Negotiator((party_id - 1) * groupsize + j,
-                               party_id * j,
-                               deepcopy(curr_party_opinions),
-                               config.party_names[party_id])
+        for j in 1:config.groupsize
+            agent = Negotiator(
+                (party_id - 1) * config.groupsize + j,
+                party_id * j,
+                deepcopy(curr_party_opinions),
+                config.party_names[party_id]
+            )
             push!(negotiators, agent)
         end
     end
@@ -54,15 +66,6 @@ function negotiation!(negotiators, parties::AbstractArray)
     populate!(model, participants)
     adata, mdata = run!(model, agent_step!, model_step!, 1, adata=[:opinions, :party], obtainer=deepcopy)
     return negotiators
-end
-
-# Populate a model with agents
-function populate!(model::Agents.ABM, negotiator_group::AbstractArray)
-    negotiator_group = vcat(negotiator_group...)
-    for i in 1:nv(model.space.graph)
-        add_agent!(negotiator_group[i], i, model)
-    end
-    return model
 end
 
 # Dummy function for agent step, the real stuff happens in model_step!

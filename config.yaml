@@ -1,4 +1,5 @@
 ---
+groupsize: 10
 all_seats: 736
 majority_requirement: 369
 seat_distribution:

@@ -1,4 +1,5 @@
 struct Config
+    groupsize::Int
     all_seats::Int
     majority_requirement::Int
     seat_distribution::AbstractDict
@@ -6,6 +7,7 @@ struct Config
     party_names::AbstractArray
     opinion_data::DataFrame
     function Config(
+        groupsize,
         all_seats,
         majority_requirement,
         seat_distribution,
@@ -14,6 +16,7 @@ struct Config
         opinion_data
     )
         return new(
+            groupsize,
             all_seats,
             majority_requirement,
             seat_distribution,
@@ -29,6 +32,7 @@ function Config(config_path::String)
     data = CSV.read(cfg_dict["data_path"], DataFrame)
     data = filter(data -> data.party_shorthand in cfg_dict["party_names"], data)
     return Config(
+        cfg_dict["groupsize"],
         cfg_dict["all_seats"],
         cfg_dict["majority_requirement"],
         cfg_dict["seat_distribution"],
