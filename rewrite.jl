@@ -90,6 +90,9 @@ mutable struct Meeting
     end
 end
 
+function StatsBase.sample(model::Model, n::Int)
+    return reduce(vcat, [snap_rep(simulate(model), rep) for rep in 1:n])
+end
 
 
 function simulate(model::Model)
@@ -103,12 +106,17 @@ function simulate(model::Model)
                 assimilate!(negotiators...)
             end
         end
-        data = reduce(vcat, [data, snapshot(model_tracker, i)])
+        data = reduce(vcat, [data, snap_step(model_tracker, i)])
     end
     return data
 end
 
-function snapshot(model, i)
+function snap_rep(data::DataFrame, rep::Int)
+    data[!, :rep] .= rep
+    return data
+end
+
+function snap_step(model::Model, i::Int)
     data = DataFrame(deepcopy(model.agents))
     data[!, :step] .= i
     return data
@@ -123,17 +131,6 @@ end
 function similarity(sender::Agent, receiver::Agent)
     1 - (sum(abs.(sender.opinions .- receiver.opinions)) / (2 * length(sender.opinions)))
 end
-
-
-
-
-
-
-# function sample(model::Model, n::Int)
-#     # run model n times -> sampling with parameters
-#     return model
-# end
-
 
 
 
