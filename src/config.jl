@@ -2,6 +2,7 @@ mutable struct ParameterSet
     groupsize::Int
     n_seats::Int
     required_majority::Int
+    required_consensus::Float64
     seat_distribution::AbstractDict
     negotiation_parties::AbstractArray
 end
@@ -25,6 +26,7 @@ function read_config(config_path::String)
         config_dict["groupsize"],
         config_dict["all_seats"],
         config_dict["majority_requirement"],
+        config_dict["consensus_requirement"],
         config_dict["seat_distribution"],
         config_dict["party_names"]
     )

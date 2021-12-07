@@ -6,6 +6,7 @@ using CSV
 using DataFrames
 using StatsBase
 using Random
+using Combinatorics
 
 # Exports
 export Agent
@@ -20,5 +21,6 @@ export sample
 include("config.jl")
 include("model.jl")
 include("simulation.jl")
+include("convergence.jl")
 
 end  # module

@@ -2,6 +2,7 @@
 groupsize: 10
 all_seats: 736
 majority_requirement: 369
+consensus_requirement: 0.8
 seat_distribution:
     SPD: 206
     GRUENE: 118
