@@ -1,127 +1,42 @@
-# Populate a model with agents
-function populate!(model::Agents.ABM, negotiator_group::AbstractArray)
-    negotiator_group = vcat(negotiator_group...)
-    for i in 1:nv(model.space.graph)
-        add_agent!(negotiator_group[i], i, model)
-    end
-    return model
+function StatsBase.sample(model::Model, n::Int)
+    return reduce(vcat, [snap_rep(simulate(model), rep) for rep in 1:n])
 end
 
 
-function setup_negotiators(config)
-    n_agents = length(config.party_names) * config.groupsize
-    negotiators = []
-    for party_id in 1:length(config.party_names)
-        curr_party_opinions = get_party_opinions(
-            config.party_names[party_id],
-            config.opinion_data
-        )
-        for j in 1:config.groupsize
-            agent = Negotiator(
-                (party_id - 1) * config.groupsize + j,
-                party_id * j,
-                deepcopy(curr_party_opinions),
-                config.party_names[party_id]
-            )
-            push!(negotiators, agent)
+function simulate(model::Model)
+    model_tracker = deepcopy(model)
+    data = snap_step(model_tracker, 0)
+    for (i, comb) in enumerate(model.negotiation_sequence)
+        meeting = Meeting(model_tracker, comb)
+        for i in 1:10000  # TODO: write confergence criterion
+            negotiators = StatsBase.sample(meeting.participants, 2)
+            if Random.rand() < similarity(negotiators...)
+                assimilate!(negotiators...)
+            end
         end
+        data = reduce(vcat, [data, snap_step(model_tracker, i)])
     end
-    return negotiators
+    return data
 end
 
-# Extract opinion vectors from the formatted wahlomat data
-function get_party_opinions(party_name, data)
-    opinions = filter(data -> data.party_shorthand == party_name, data)
-    opinions = collect(opinions[1, 3:40])
-    return opinions
+function snap_rep(data::DataFrame, rep::Int)
+    data[!, :rep] .= rep
+    return data
 end
 
-# Get all n-combinations of the parties
-function get_party_combinations(party_names, n=2)
-    combs = combinations(party_names, n)
-    return combs
+function snap_step(model::Model, i::Int)
+    data = DataFrame(deepcopy(model.agents))
+    data[!, :step] .= i
+    return data
 end
 
-# Run given sequence of party negotiations
-function meta_run!(negotiators, party_combinations)
-    init_negotiators = DataFrame(deepcopy(negotiators))
-    init_negotiators[!, :step] .= 0
-    results = [init_negotiators]
-    for (i, pp) in enumerate(party_combinations)
-        negotiation!(negotiators, pp)
-        curr_negotiators = DataFrame(deepcopy(negotiators))
-        curr_negotiators[!, :step] .= i
-        push!(results, curr_negotiators)
-    end
-    results = vcat(results...)
-    return results
+function assimilate!(sender::Agent, receiver::Agent)
+    i = Random.rand(1:length(sender.opinions))
+    receiver.opinions[i] = sign(sender.opinions[i] + receiver.opinions[i])
+    return receiver
 end
 
-# The "meta" model step: a selection of parties negotiate
-function negotiation!(negotiators, parties::AbstractArray)
-    participants = filter(negotiator -> negotiator.party in parties, negotiators)
-    n_participants = length(participants)
-    space = Agents.GraphSpace(Graphs.complete_graph(n_participants))
-    model = Agents.ABM(Negotiator, space)
-    populate!(model, participants)
-    adata, mdata = run!(model, agent_step!, model_step!, 1, adata=[:opinions, :party], obtainer=deepcopy)
-    return negotiators
+function similarity(sender::Agent, receiver::Agent)
+    1 - (sum(abs.(sender.opinions .- receiver.opinions)) / (2 * length(sender.opinions)))
 end
 
-# Dummy function for agent step, the real stuff happens in model_step!
-function agent_step!(agent, model)
-    return agent
-end
-
-# Run once every step to update model parameters
-function model_step!(model::Agents.ABM)
-    for i in 1:100000  # convergence criterium
-        agent1 = random_agent(model)
-        agent2 = random_agent(model)
-        if Random.rand() < similarity([agent1, agent2])
-            assimilate!(agent1, agent2)
-        end
-    end
-    return model
-end
-
-# Axelrod rule
-function assimilate!(agent1, agent2)
-    i = Random.rand(1:length(agent1.opinions))
-    agent1.opinions[i] = sign(agent1.opinions[i] + agent2.opinions[i])
-    return agent1, agent2
-end
-
-# Ordinal similarity
-function similarity(agents::Array{Negotiator})  # TODO: refactor
-    1 - (sum(abs.(agents[1].opinions .- agents[2].opinions)) / (2 * length(agents[1].opinions)))
-end
-
-function similarity(opinions::AbstractArray)
-    1 - (sum(abs.(opinions[1] .- opinions[2])) / (2 * length(opinions[1])))
-end
-
-# TODO: fix bug
-function can_form_government(parties, negotiators, seats, consensus_requirement)
-    candidates = filter(negotiators -> negotiators.party in parties, negotiators)
-    sum_seats = 0
-    for (k, v) in seats
-        if k in parties
-            sum_seats += v
-        end
-    end
-    has_majority = sum_seats >= MAJORITY_REQUIREMENT ? true : false  # check
-    # combs = collect(combinations(candidates, 2))
-    # has_consensus = (sum(similarity.(combs)) / length(combs)) == 1.
-    party_consensus_opinions = [party_consensus(negotiators, p) for p in parties]
-    sims = [similarity(o) for o in collect(combinations(party_consensus_opinions, 2))]
-    has_consensus = reduce(&, sims .> consensus_requirement)
-    return has_majority & has_consensus
-end
-
-function party_consensus(negotiators, party)
-    party_negotiators = filter(negotiators -> negotiators.party == party, negotiators)
-    negotiator_opinions = [pn.opinions for pn in party_negotiators]
-    party_consensus_opinions = [StatsBase.mode([o[i] for o in negotiator_opinions]) for i in 1:length(negotiator_opinions[1])]
-    return party_consensus_opinions
-end

@@ -1,27 +1,24 @@
 module Negotiations
 
-using Agents
-using Graphs
-using StatsBase
-using Random
+# Dependencies
+using YAML
 using CSV
 using DataFrames
-using Combinatorics
-using YAML
+using StatsBase
+using Random
 
-export Negotiator
-export NegotiationModel
-export Config
-export setup_negotiators
-export get_party_combinations
-export meta_run!
+# Exports
+export Agent
+export ParameterSet
+export Model
+export read_config
+export setup_model
+export simulate
+export sample
 
+# Source scripts
 include("config.jl")
-include("types.jl")
+include("model.jl")
 include("simulation.jl")
 
-end  # end module
-
-
-
-
+end  # module

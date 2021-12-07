@@ -1,43 +1,41 @@
-struct Config
+mutable struct ParameterSet
     groupsize::Int
-    all_seats::Int
-    majority_requirement::Int
+    n_seats::Int
+    required_majority::Int
     seat_distribution::AbstractDict
-    party_names_all::AbstractArray
-    party_names::AbstractArray
-    opinion_data::DataFrame
-    function Config(
-        groupsize,
-        all_seats,
-        majority_requirement,
-        seat_distribution,
-        party_names_all,
-        party_names,
-        opinion_data
-    )
-        return new(
-            groupsize,
-            all_seats,
-            majority_requirement,
-            seat_distribution,
-            party_names_all,
-            party_names,
-            opinion_data
-        )
-    end
+    negotiation_parties::AbstractArray
 end
 
-function Config(config_path::String)
-    cfg_dict = YAML.load_file(config_path)
-    data = CSV.read(cfg_dict["data_path"], DataFrame)
-    data = filter(data -> data.party_shorthand in cfg_dict["party_names"], data)
-    return Config(
-        cfg_dict["groupsize"],
-        cfg_dict["all_seats"],
-        cfg_dict["majority_requirement"],
-        cfg_dict["seat_distribution"],
-        cfg_dict["party_names_all"],
-        cfg_dict["party_names"],
-        data
+function Base.show(io::IO, params::ParameterSet)
+    # TODO: format better
+    print(
+        """
+        ParameterSet with model specifications:
+            groupsize: $(params.groupsize)
+            n_seats: $(params.n_seats)
+            required_majority: $(params.required_majority)
+            negotiation_parties: $(params.negotiation_parties)
+        """
     )
 end
+
+function read_config(config_path::String)
+    config_dict = YAML.load_file(config_path)
+    params = ParameterSet(
+        config_dict["groupsize"],
+        config_dict["all_seats"],
+        config_dict["majority_requirement"],
+        config_dict["seat_distribution"],
+        config_dict["party_names"]
+    )
+    opinions_dataframe = CSV.read(config_dict["data_path"], DataFrame)
+    opinions = Dict()
+    for r in eachrow(opinions_dataframe)
+        if r.party_shorthand in params.negotiation_parties
+            opinions[Symbol(r.party_shorthand)] = collect(r[3:end])
+        end
+    end
+    return params, opinions
+end
+
+
