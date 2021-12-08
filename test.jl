@@ -11,4 +11,3 @@ single_run_data = Negotiations.simulate(model)
 
 # To sample from the model (i.e., run multiple replicates on the same parameter set)
 multiple_run_data = Negotiations.sample(model, 5)
-
