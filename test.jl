@@ -3,8 +3,8 @@ Pkg.activate(".")
 
 include("src/Negotiations.jl")
 
-params, opinions = Negotiations.read_config("config.yaml")
-model = Negotiations.setup_model(params, opinions, [["SPD", "GRUENE"], ["SPD", "FDP"]])
+params = Negotiations.read_config("config.yaml")
+model = Negotiations.setup_model(params, [["SPD", "GRUENE"], ["SPD", "FDP"]])
 
 # To run a single simulation
 single_run_data = Negotiations.simulate(model)

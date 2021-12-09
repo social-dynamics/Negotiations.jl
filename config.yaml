@@ -1,9 +1,6 @@
 ---
-groupsize: 10
-all_seats: 736
-majority_requirement: 369
-consensus_requirement: 0.8
-seat_distribution:
+group_size: 10
+parliament:
     SPD: 206
     GRUENE: 118
     FDP: 92
@@ -11,7 +8,8 @@ seat_distribution:
     AfD: 83
     SSW: 1
     LINKE: 39
-party_names_all: ["SPD", "CDU_CSU", "GRUENE", "FDP", "AfD", "DIE_LINKE", "SSW"]
-party_names: ["SPD", "CDU_CSU", "GRUENE", "FDP"]
+parliament_majority: 369
+required_consensus: 0.8
+parties: ["SPD", "CDU_CSU", "GRUENE", "FDP"]
 data_path: "data/data_wide.csv"
 ---

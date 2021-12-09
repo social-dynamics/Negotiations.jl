@@ -1,43 +1,44 @@
 mutable struct ParameterSet
-    groupsize::Int
-    n_seats::Int
-    required_majority::Int
+    group_size::Int
+    parliament::AbstractDict
+    parliament_size::Int
+    parliament_majority::Int
     required_consensus::Float64
-    seat_distribution::AbstractDict
-    negotiation_parties::AbstractArray
+    parties::AbstractArray
+    opinions::AbstractDict
 end
 
 function Base.show(io::IO, params::ParameterSet)
-    # TODO: format better
     print(
         """
-        ParameterSet with model specifications:
-            groupsize: $(params.groupsize)
-            n_seats: $(params.n_seats)
-            required_majority: $(params.required_majority)
-            negotiation_parties: $(params.negotiation_parties)
+        ParameterSet with negotiator groups of size $(params.group_size)
+        parliament: $(params.parliament_size) seats, required majority is $(params.parliament_majority)
+        parties included in the negotiations: $(params.parties)
         """
     )
 end
 
 function read_config(config_path::String)
     config_dict = YAML.load_file(config_path)
-    params = ParameterSet(
-        config_dict["groupsize"],
-        config_dict["all_seats"],
-        config_dict["majority_requirement"],
-        config_dict["consensus_requirement"],
-        config_dict["seat_distribution"],
-        config_dict["party_names"]
-    )
     opinions_dataframe = CSV.read(config_dict["data_path"], DataFrame)
     opinions = Dict()
     for r in eachrow(opinions_dataframe)
-        if r.party_shorthand in params.negotiation_parties
+        if r.party_shorthand in config_dict["parties"]
+            # TODO: improve
+            #       not ideal that the data scheme must be exactly right for this to work
             opinions[Symbol(r.party_shorthand)] = collect(r[3:end])
         end
     end
-    return params, opinions
+    params = ParameterSet(
+        config_dict["group_size"],
+        config_dict["parliament"],
+        sum(values(config_dict["parliament"])),
+        config_dict["parliament_majority"],
+        config_dict["required_consensus"],
+        config_dict["parties"],
+        opinions
+    )
+    return params
 end
 
 
