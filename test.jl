@@ -31,7 +31,7 @@ single_run_data = Negotiations.simulate.(models)
 multiple_run_data = reduce(vcat, [snap_model(m, i) for (i, m) in enumerate(Negotiations.sample.(models, 5))])
 
 
-using Arrow
+# using Arrow
 
-Arrow.write("../data-exploration/data.arrow", multiple_run_data)
+# Arrow.write("../data-exploration/data.arrow", multiple_run_data)
 

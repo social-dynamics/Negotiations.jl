@@ -1,0 +1,11 @@
+---
+group_size: 10
+parliament:
+    TEST_PARTY_1: 89
+    TEST_PARTY_2: 23
+    TEST_PARTY_3: 45
+parliament_majority: 79
+required_consensus: 0.8
+parties: ["TEST_PARTY_1", "TEST_PARTY_2"]
+data_path: "test-data.csv"
+---
