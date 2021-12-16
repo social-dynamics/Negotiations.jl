@@ -13,6 +13,27 @@ mutable struct ParameterSet
     opinions::AbstractDict
 end
 
+
+# Constructor with keyword arguments
+ParameterSet(;
+    group_size,
+    parliament,
+    parliament_size,
+    parliament_majority,
+    required_consensus,
+    parties,
+    opinions
+) = ParameterSet(
+    group_size,
+    parliament,
+    parliament_size,
+    parliament_majority,
+    required_consensus,
+    parties,
+    opinions
+)
+
+
 function Base.show(io::IO, params::ParameterSet)
     print(
         """
@@ -23,14 +44,37 @@ function Base.show(io::IO, params::ParameterSet)
     )
 end
 
+
 """
     read_config(config_path::String)
 
-
+Load a YAML config file and turn it into a `ParameterSet`.
 """
 function read_config(config_path::String)
     config_dict = YAML.load_file(config_path)
+    opinions = extract_opinions(config_dict)
+    params = ParameterSet(
+        group_size = config_dict["group_size"],
+        parliament = config_dict["parliament"],
+        parliament_size = calculate_parliament_size(config_dict),
+        parliament_majority = config_dict["parliament_majority"],
+        required_consensus = config_dict["required_consensus"],
+        parties = config_dict["parties"],
+        opinions = opinions
+    )
+    return params
+end
+
+
+"""
+    extract_opinions(config_dict::AbstractDict)
+
+Extract opinions from a given `config_dict` from a parsed YAML.
+This function is called in `read_config`.
+"""
+function extract_opinions(config_dict::AbstractDict)
     opinions_dataframe = CSV.read(config_dict["data_path"], DataFrame)
+    # TODO: write data integrity test -> custom error
     opinions = Dict()
     for r in eachrow(opinions_dataframe)
         if r.party_shorthand in config_dict["parties"]
@@ -39,16 +83,16 @@ function read_config(config_path::String)
             opinions[Symbol(r.party_shorthand)] = Float64.(collect(r[3:end]))
         end
     end
-    params = ParameterSet(
-        config_dict["group_size"],
-        config_dict["parliament"],
-        sum(values(config_dict["parliament"])),
-        config_dict["parliament_majority"],
-        config_dict["required_consensus"],
-        config_dict["parties"],
-        opinions
-    )
-    return params
+    return opinions
 end
 
 
+"""
+    calculate_parliament_size(config_dict::AbstractDict)
+
+Calculate the number of seats of the parliament given by a `config_dict`.
+The `config_dict` is a parsed YAML file (see `read_config`).
+"""
+function calculate_parliament_size(config_dict::AbstractDict)
+    return sum(values(config_dict["parliament"]))
+end
