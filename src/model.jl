@@ -16,7 +16,7 @@ function setup_model(params::ParameterSet, negotiation_sequence::AbstractArray)
     agent_ids = 1:n_agents
     agent_parties = reduce(vcat, [repeat([party], params.group_size) for party in params.parties])
     agent_opinions = [params.opinions[Symbol(party)] for party in agent_parties]
-    agents = [Agent(i, p, o) for (i, p, o) in zip(agent_ids, agent_parties, agent_opinions)]
+    agents = [Agent(i, p, deepcopy(o)) for (i, p, o) in zip(agent_ids, agent_parties, agent_opinions)]
     return Model(
         params,
         agents,

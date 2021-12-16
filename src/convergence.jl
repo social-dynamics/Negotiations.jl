@@ -1,7 +1,7 @@
 function can_form_government(model::Model)
     party_combs = all_party_combinations(model)
     seats = [combined_seats(model, comb) for comb in party_combs]
-    party_consensus_dict = Dict(party => party_consensus(model, party) for party in model.parameter_set.negotiation_parties)
+    party_consensus_dict = Dict(party => party_consensus(model, party) for party in model.parameter_set.parties)
     pairwise_similarities = [pair_similarities(pc, party_consensus_dict) for pc in party_combs]
     have_consensus_list = [have_consensus(model, s) for s in pairwise_similarities]
     return sum(have_consensus_list) == 1
@@ -13,12 +13,12 @@ function have_consensus(model::Model, similarities::AbstractArray)
 end
 
 function all_party_combinations(model::Model)
-    return collect(Combinatorics.combinations(model.parameter_set.negotiation_parties))
+    return collect(Combinatorics.combinations(model.parameter_set.parties))
 end
 
 
 function combined_seats(model::Model, parties::AbstractArray)
-     return sum([model.parameter_set.seat_distribution[party] for party in parties])
+     return sum([model.parameter_set.parliament[party] for party in parties])
 end
 
 

@@ -18,13 +18,16 @@ function simulate(model::Model)
     data = snap_step(model_tracker, 0)
     for (i, comb) in enumerate(model.negotiation_sequence)
         meeting = Meeting(model_tracker, comb)
-        for i in 1:10000  # TODO: write confergence criterion
+        for i in 1:10000  # TODO: write convergence criterion
             negotiators = StatsBase.sample(meeting.participants, 2)
             if Random.rand() < similarity(negotiators...)
                 assimilate!(negotiators...)
             end
         end
         data = reduce(vcat, [data, snap_step(model_tracker, i)])
+        # if can_form_government(model)
+        #     break
+        # end
     end
     return data
 end
@@ -60,7 +63,8 @@ Change one of the receiver's opinions to sender's opinion.
 """
 function assimilate!(sender::Agent, receiver::Agent)
     i = Random.rand(1:length(sender.opinions))
-    receiver.opinions[i] = sign(sender.opinions[i] + receiver.opinions[i])
+    # receiver.opinions[i] = sign(sender.opinions[i] + receiver.opinions[i])
+    receiver.opinions[i] = StatsBase.mean([sender.opinions[i], receiver.opinions[i]])
     return receiver
 end
 

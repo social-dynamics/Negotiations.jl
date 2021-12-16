@@ -1,13 +1,12 @@
 # Next Steps
 
+    * vote on coalition contract (eval: who could reach how many of their goals?)
+    * relative position in negotiations -> correlation with coalition "success"
+
     * stop criterium (what's a viable coalition?)
-    * sampling scheme
     * likelihood estimation
-    * output data format
-    * config scheme (YAML)
     * opinion weighting -> incl. how to compute (e.g. similarity?)
 
-    -> Module
     -> apply to future elections
 
 # Notes
@@ -25,7 +24,6 @@
 # Moved here from Code
 
 TODO:
-  * refactor
   * aim at minimal coalition
       * seats in Bundestag as "currency"
   * add stubbornness (only move by one in every dimension)

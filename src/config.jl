@@ -1,3 +1,8 @@
+"""
+    ParameterSet
+
+A set of parameters with which the model will be run.
+"""
 mutable struct ParameterSet
     group_size::Int
     parliament::AbstractDict
@@ -18,6 +23,11 @@ function Base.show(io::IO, params::ParameterSet)
     )
 end
 
+"""
+    read_config(config_path::String)
+
+
+"""
 function read_config(config_path::String)
     config_dict = YAML.load_file(config_path)
     opinions_dataframe = CSV.read(config_dict["data_path"], DataFrame)
@@ -26,7 +36,7 @@ function read_config(config_path::String)
         if r.party_shorthand in config_dict["parties"]
             # TODO: improve
             #       not ideal that the data scheme must be exactly right for this to work
-            opinions[Symbol(r.party_shorthand)] = collect(r[3:end])
+            opinions[Symbol(r.party_shorthand)] = Float64.(collect(r[3:end]))
         end
     end
     params = ParameterSet(
