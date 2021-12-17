@@ -40,3 +40,7 @@ end
     @test test_model.parameter_set == test_params
     @test length(test_model.agents) == 20
 end
+
+
+
+
