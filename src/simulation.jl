@@ -15,7 +15,8 @@ Run a model once.
 """
 function simulate(model::Model)
     model_tracker = deepcopy(model)
-    data = snap_step(model_tracker, 0)
+    # track initial configuration
+    data = snap_step(DataFrame(deepcopy(model_tracker.agents)), 0)
     for (i, comb) in enumerate(model.negotiation_sequence)
         meeting = Meeting(model_tracker, comb)
         for i in 1:10000  # TODO: write convergence criterion
@@ -24,7 +25,8 @@ function simulate(model::Model)
                 assimilate!(negotiators...)
             end
         end
-        data = reduce(vcat, [data, snap_step(model_tracker, i)])
+        step_data = DataFrame(deepcopy(model_tracker.agents))
+        data = reduce(vcat, [data, snap_step(step_data, i)])
         # if can_form_government(model)
         #     break
         # end
@@ -45,13 +47,12 @@ end
 
 
 """
-    snap_step(model::Model, i::Int)
+    snap_step(data::DataFrame, rep::Int)
 
-Make a snapshot of the simulation data in step i.
+Make a snapshot of the simulation data in step `step`.
 """
-function snap_step(model::Model, i::Int)
-    data = DataFrame(deepcopy(model.agents))
-    data[!, :step] .= i
+function snap_step(data::DataFrame, step::Int)
+    data[!, :step] .= step
     return data
 end
 
@@ -63,7 +64,6 @@ Change one of the receiver's opinions to sender's opinion.
 """
 function assimilate!(sender::Agent, receiver::Agent)
     i = Random.rand(1:length(sender.opinions))
-    # receiver.opinions[i] = sign(sender.opinions[i] + receiver.opinions[i])
     receiver.opinions[i] = StatsBase.mean([sender.opinions[i], receiver.opinions[i]])
     return receiver
 end
@@ -76,5 +76,7 @@ Compute the ordinal similarity of two agents.
 Argument names are chosen to match assimilate! function.
 """
 function similarity(sender::Agent, receiver::Agent)
-    1 - (sum(abs.(sender.opinions .- receiver.opinions)) / (2 * length(sender.opinions)))
+    absolute_difference = sum(abs.(sender.opinions .- receiver.opinions))
+    highest_possible_difference = 2 * length(sender.opinions)
+    return 1 - (absolute_difference / highest_possible_difference)
 end

@@ -21,6 +21,7 @@ mutable struct Model
     negotiation_sequence::Vector{Vector{String}}
 end
 
+
 """
     setup_model(params::ParameterSet, negotiation_sequence::Vector{Vector{String})
 
