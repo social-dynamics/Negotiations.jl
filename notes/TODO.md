@@ -5,7 +5,7 @@
 
     * stop criterium (what's a viable coalition?)
     * likelihood estimation
-    * opinion weighting -> incl. how to compute (e.g. similarity?)
+    * [opinion](opinion) weighting -> incl. how to compute (e.g. similarity?)
 
     -> apply to future elections
 
@@ -28,3 +28,9 @@ TODO:
       * seats in Bundestag as "currency"
   * add stubbornness (only move by one in every dimension)
 
+
+# TODO
+
+* [ ] create new test database for testing
+* [ ] update tests to new workflow
+* [ ] streamline up to model runs
