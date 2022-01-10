@@ -1,5 +1,5 @@
 """
-    samle(model::Model, n::Int)
+    sample(model::Model, n::Int)
 
 Draw n samples from a model.
 """

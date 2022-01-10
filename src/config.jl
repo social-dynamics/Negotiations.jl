@@ -10,7 +10,7 @@ mutable struct ParameterSet
     parliament_majority::Int
     required_consensus::Float64
     parties::AbstractArray
-    opinions::AbstractDict
+    opinions::DataFrame
 end
 
 
@@ -52,7 +52,8 @@ Load a YAML config file and turn it into a `ParameterSet`.
 """
 function read_config(config_path::String)
     config_dict = YAML.load_file(config_path)
-    opinions = extract_opinions(config_dict)
+    db = SQLite.DB(config_dict["data_path"])
+    opinions = extract_opinions(db)
     params = ParameterSet(
         group_size = config_dict["group_size"],
         parliament = config_dict["parliament"],
@@ -62,7 +63,7 @@ function read_config(config_path::String)
         parties = config_dict["parties"],
         opinions = opinions
     )
-    return params
+    return params, db
 end
 
 
@@ -72,18 +73,24 @@ end
 Extract opinions from a given `config_dict` from a parsed YAML.
 This function is called in `read_config`.
 """
-function extract_opinions(config_dict::AbstractDict)
-    opinions_dataframe = CSV.read(config_dict["data_path"], DataFrame)
+function extract_opinions(db::SQLite.DB)
+    return DBInterface.execute(
+        db,
+        """
+        SELECT party_id, statement_id, position
+        FROM opinion
+        """
+    ) |> DataFrame
+    # opinions_dataframe = CSV.read(config_dict["data_path"], DataFrame)
     # TODO: write data integrity test -> custom error
-    opinions = Dict()
-    for r in eachrow(opinions_dataframe)
-        if r.party_shorthand in config_dict["parties"]
-            # TODO: improve
-            #       not ideal that the data scheme must be exactly right for this to work
-            opinions[Symbol(r.party_shorthand)] = Float64.(collect(r[3:end]))
-        end
-    end
-    return opinions
+    # opinions = Dict()
+    # for r in eachrow(opinions_dataframe)
+    #     if r.party_shorthand in config_dict["parties"]
+    #         # TODO: improve
+    #         #       not ideal that the data scheme must be exactly right for this to work
+    #         opinions[Symbol(r.party_shorthand)] = Float64.(collect(r[3:end]))
+    #     end
+    # end
 end
 
 

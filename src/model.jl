@@ -41,16 +41,31 @@ end
 
 Create a vector of agents with the specifications from a `ParameterSet`.
 """
-function create_agents(params::ParameterSet)
+function create_agents(params::ParameterSet, db::SQLite.DB)
     n_agents = length(params.parties) * params.group_size
     agent_ids = 1:n_agents
     agent_parties = reduce(
         vcat,
         [repeat([party], params.group_size) for party in params.parties]
     )
-    agent_opinions = [params.opinions[Symbol(party)] for party in agent_parties]
+    opinions_with_party = DBInterface.execute(
+        db,
+        """
+        SELECT party_shorthand, statement_id, position
+        FROM opinion JOIN party 
+        ON opinion.party_id = party.party_id
+        """
+    ) |> DataFrame
+    opinions = Dict(
+        party => filter(
+            p -> p.party_shorthand == party,
+            opinions_with_party
+           ).position
+        for party in params.parties
+    )
+    agent_opinions = [opinions[party] for party in agent_parties]
     agents = [
-        Agent(i, p, deepcopy(o)) 
+        Agent(i, p, deepcopy(o))
         for (i, p, o) in zip(agent_ids, agent_parties, agent_opinions)
     ]
     return agents

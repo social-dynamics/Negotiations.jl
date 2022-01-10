@@ -7,6 +7,7 @@ using DataFrames
 using StatsBase
 using Random
 using Combinatorics
+using SQLite
 
 # Exports
 export Agent
