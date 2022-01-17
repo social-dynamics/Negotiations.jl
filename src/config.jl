@@ -45,7 +45,7 @@ end
 """
     parameter_set_from_config(config_path::String)
 
-Factory method to create a ParameterSet from a YAML configuration file.
+Factory method to create a `ParameterSet` from a YAML configuration file.
 """
 function parameter_set_from_config(config_path::String)
     config_dict = YAML.load_file(config_path)
@@ -64,7 +64,7 @@ end
 """
     load_database(db_path::String)
 
-Load a database from a given path.
+Load a database from a given path while making sure that it conforms to the model standard.
 """
 function load_database(db_path::String)
     db = SQLite.DB(db_path)
@@ -74,6 +74,7 @@ end
 
 
 # TODO: works, but requires refactoring
+#       this is rather a proof-of-concept than an actual solution
 """
     conforms_to_schema(db::SQLite.DB)
 
@@ -106,10 +107,9 @@ end
 
 
 """
-    opinions_view(config_dict::AbstractDict)
+    opinions_view(db:SQLite.DB)
 
-Extract opinions from a given `config_dict` from a parsed YAML.
-This function is called in `read_config`.
+Get a database view on the party opinions in a suitable database.
 """
 function opinions_view(db::SQLite.DB)
     return DBInterface.execute(
@@ -131,5 +131,3 @@ The `config_dict` is a parsed YAML file (see `read_config`).
 function calculate_parliament_size(config_dict::AbstractDict)
     return sum(values(config_dict["parliament"]))
 end
-
-

@@ -50,25 +50,25 @@ end  # load_database_test
 
 
 
-# @testset "extract_opinions_test" begin
+@testset "opinions_view_test" begin
 
-#     test_params, test_db = read_config("test-config.yaml")
-#     opinions = Negotiations.extract_opinions(test_db)
+    if "test.sqlite" in readdir()
+        Base.Filesystem.rm("test.sqlite")
+    end
+    include("create-db.jl")
+    test_params = parameter_set_from_config("test-config.yaml")
+    test_db = load_database("test.sqlite")
+    opinions = opinions_view(test_db)
 
-#     @test names(opinions) == ["party_id", "statement_id", "position"]
-#     @test typeof(opinions) <: AbstractDataFrame
-#     @test unique(opinions.party_id) == [1, 2, 3]
-#     @test unique(opinions.statement_id) == [1, 2, 3]
-#     @test Set(opinions.position) <= Set([-1, 0, 1])
+    @test names(opinions) == ["party_id", "statement_id", "position"]
+    @test typeof(opinions) <: AbstractDataFrame
+    @test unique(opinions.party_id) == [1, 2, 3]
+    @test unique(opinions.statement_id) == [1, 2, 3]
+    @test Set(opinions.position) <= Set([-1, 0, 1])
 
-# end  # extract_opinions_test
+    Base.Filesystem.rm("test.sqlite")
 
-
-# @testset "calculate_parliament_size_test" begin
-#     config_dict = YAML.load_file("test-config.yaml")
-#     parliament_size = Negotiations.calculate_parliament_size(config_dict)
-#     @test parliament_size == 157
-# end  # calculate_parliament_size_test
+end  # opinions_view_test
 
 
 # @testset "setup_model_test" begin
