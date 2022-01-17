@@ -5,7 +5,7 @@ The agent type for the party negotiation model.
 """
 mutable struct Agent
     id::Integer
-    party::String  # Symbol?
+    party::String  # Symbol? -> some sort of Enum?
     opinions::AbstractArray
 end
 
@@ -29,13 +29,16 @@ Create a model from a given set of specifications.
 """
 function setup_model(
     params::ParameterSet,
-    negotiation_sequence::Vector{Vector{String}}
+    negotiation_sequence::Vector{Vector{String}},
+    db::SQLite.DB
 )
-    agents = create_agents(params)
+    agents = create_agents(params, db)
     return Model(params, agents, negotiation_sequence)
 end
 
 
+# TODO: currently broken due to updated config procedure
+# TODO: refactor, this can be simplified
 """
     create_agents(params::ParameterSet)
 
@@ -52,7 +55,7 @@ function create_agents(params::ParameterSet, db::SQLite.DB)
         db,
         """
         SELECT party_shorthand, statement_id, position
-        FROM opinion JOIN party 
+        FROM opinion JOIN party
         ON opinion.party_id = party.party_id
         """
     ) |> DataFrame

@@ -29,7 +29,6 @@ end  # read_config_test
 @testset "extract_opinions_test" begin
 
     test_params, test_db = read_config("test-config.yaml")
-
     opinions = Negotiations.extract_opinions(test_db)
 
     @test names(opinions) == ["party_id", "statement_id", "position"]

@@ -24,6 +24,14 @@ function simulate(model::Model)
             if Random.rand() < similarity(negotiators...)
                 assimilate!(negotiators...)
             end
+            # Compare hashes of two states as convergence?
+            # If same: increase counter
+            # Else: counter = 0
+            # If counter > k: break
+            #
+            # ?hash -> for hashing
+            # dispatch multiple hash functions for each type
+            # summarize in "deephash"
         end
         step_data = DataFrame(deepcopy(model_tracker.agents))
         data = reduce(vcat, [data, snap_step(step_data, i)])

@@ -1,4 +1,6 @@
-# Next Steps
+# Notes
+
+## Short-term
 
     * vote on coalition contract (eval: who could reach how many of their goals?)
     * relative position in negotiations -> correlation with coalition "success"
@@ -9,28 +11,27 @@
 
     -> apply to future elections
 
-# Notes
+## Long-term
 
     * we need to define utility / payoff
         * distance between coalition opinion and initial party opinion (or initial individual opinion)
-
-
-# Further Down the Road
-
     * opinion variability within group  // DISCUSS -> probably later
-
-
-
-# Moved here from Code
-
-TODO:
-  * aim at minimal coalition
-      * seats in Bundestag as "currency"
-  * add stubbornness (only move by one in every dimension)
+    * aim at minimal coalition
+        * seats in Bundestag as "currency"
+    * add stubbornness (only move by one in every dimension)
 
 
 # TODO
 
-* [ ] create new test database for testing
+* [x] create new test database for testing
+* [x] finish new config procedure
+* [ ] finish new model setup
 * [ ] update tests to new workflow
+* [ ] refactor conforms_to_schema function
 * [ ] streamline up to model runs
+* [ ] implement axelrod convergence criterion
+* [ ] convergence have_consensus
+* [ ] convergence can_form_government
+* [ ] reward function (how close is the final consensus to the initial opinion?)
+* [ ] weights for opinions
+* [ ] interactive "walkthrough" create_params function
