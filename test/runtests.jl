@@ -4,36 +4,41 @@ using Test
 using DataFrames
 using SQLite
 
-@test true
+include("create-db.jl")
 
-# TODO: WRITE TESTS FOR NEW SETUP WITH DATABASE
-# @testset "read_config_test" begin
-#     test_params, test_db = read_config("test-config.yaml")
-#     @test :group_size in propertynames(test_params)
-#     @test :parliament in propertynames(test_params)
-#     @test :parliament_size in propertynames(test_params)
-#     @test :parliament_majority in propertynames(test_params)
-#     @test :required_consensus in propertynames(test_params)
-#     @test :parties in propertynames(test_params)
-#     @test :opinions in propertynames(test_params)
-#     @test test_params.parliament_size == 157
-# end  # read_config_test
+@testset "read_config_test" begin
+
+    test_params, test_db = read_config("test-config.yaml")
+
+    # Parameter set
+    @test :group_size in propertynames(test_params)
+    @test :parliament in propertynames(test_params)
+    @test :parliament_size in propertynames(test_params)
+    @test :parliament_majority in propertynames(test_params)
+    @test :required_consensus in propertynames(test_params)
+    @test :parties in propertynames(test_params)
+    @test :opinions in propertynames(test_params)
+    @test test_params.parliament_size == 157
+
+    # Database
+    @test SQLite.tables(test_db).name == ["party", "statement", "opinion"]
+
+end  # read_config_test
 
 
-# @testset "extract_opinions_test" begin
-#     config_dict = YAML.load_file("test-config.yaml")
-#     opinions = Negotiations.extract_opinions(config_dict)
-#     @test (
-#         length(
-#             filter(
-#                 x -> !(x in [-1, 0, 1]),
-#                 opinions[:TEST_PARTY_1]
-#             )
-#         ) == 0
-#     )
-#     @test typeof(opinions) <: Dict{Any, Any}
-#     @test !(:TEST_PARTY_3 in keys(opinions))
-# end  # extract_opinions_test
+@testset "extract_opinions_test" begin
+
+    test_params, test_db = read_config("test-config.yaml")
+
+    opinions = Negotiations.extract_opinions(test_db)
+
+    @test names(opinions) == ["party_id", "statement_id", "position"]
+    @test typeof(opinions) <: AbstractDataFrame
+    @test unique(opinions.party_id) == [1, 2, 3]
+    @test unique(opinions.statement_id) == [1, 2, 3]
+    @test Set(opinions.position) <= Set([-1, 0, 1])
+
+end  # extract_opinions_test
 
 
 # @testset "calculate_parliament_size_test" begin
@@ -100,3 +105,7 @@ using SQLite
 #     @test typeof(test_model_sample_data_5) == DataFrames.DataFrame
 #     @test maximum(test_model_sample_data_5.rep) == 5
 # end  # negotiations_sample_test
+
+
+Base.Filesystem.rm("test.sqlite")
+

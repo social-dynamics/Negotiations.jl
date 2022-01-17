@@ -81,16 +81,6 @@ function extract_opinions(db::SQLite.DB)
         FROM opinion
         """
     ) |> DataFrame
-    # opinions_dataframe = CSV.read(config_dict["data_path"], DataFrame)
-    # TODO: write data integrity test -> custom error
-    # opinions = Dict()
-    # for r in eachrow(opinions_dataframe)
-    #     if r.party_shorthand in config_dict["parties"]
-    #         # TODO: improve
-    #         #       not ideal that the data scheme must be exactly right for this to work
-    #         opinions[Symbol(r.party_shorthand)] = Float64.(collect(r[3:end]))
-    #     end
-    # end
 end
 
 

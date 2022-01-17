@@ -7,5 +7,5 @@ parliament:
 parliament_majority: 79
 required_consensus: 0.8
 parties: ["TEST_PARTY_1", "TEST_PARTY_2"]
-data_path: "test-data.csv"
+data_path: "test.sqlite"
 ---
