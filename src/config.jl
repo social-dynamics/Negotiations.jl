@@ -43,7 +43,7 @@ end
 
 
 """
-    read_config(config_path::String)
+    parameter_set_from_config(config_path::String)
 
 Factory method to create a ParameterSet from a YAML configuration file.
 """
@@ -70,34 +70,6 @@ function load_database(db_path::String)
     db = SQLite.DB(db_path)
     @assert conforms_to_schema(db) "The database you provided is not suitable for this model."
     return db
-end
-
-
-"""
-    extract_opinions(config_dict::AbstractDict)
-
-Extract opinions from a given `config_dict` from a parsed YAML.
-This function is called in `read_config`.
-"""
-function opinions_view(db::SQLite.DB)
-    return DBInterface.execute(
-        db,
-        """
-        SELECT party_id, statement_id, position
-        FROM opinion
-        """
-    ) |> DataFrame
-end
-
-
-"""
-    calculate_parliament_size(config_dict::AbstractDict)
-
-Calculate the number of seats of the parliament given by a `config_dict`.
-The `config_dict` is a parsed YAML file (see `read_config`).
-"""
-function calculate_parliament_size(config_dict::AbstractDict)
-    return sum(values(config_dict["parliament"]))
 end
 
 
@@ -131,3 +103,33 @@ function conforms_to_schema(db::SQLite.DB)
     )
 
 end
+
+
+"""
+    opinions_view(config_dict::AbstractDict)
+
+Extract opinions from a given `config_dict` from a parsed YAML.
+This function is called in `read_config`.
+"""
+function opinions_view(db::SQLite.DB)
+    return DBInterface.execute(
+        db,
+        """
+        SELECT party_id, statement_id, position
+        FROM opinion
+        """
+    ) |> DataFrame
+end
+
+
+"""
+    calculate_parliament_size(config_dict::AbstractDict)
+
+Calculate the number of seats of the parliament given by a `config_dict`.
+The `config_dict` is a parsed YAML file (see `read_config`).
+"""
+function calculate_parliament_size(config_dict::AbstractDict)
+    return sum(values(config_dict["parliament"]))
+end
+
+

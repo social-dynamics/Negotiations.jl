@@ -4,11 +4,14 @@ using Test
 using DataFrames
 using SQLite
 
-include("create-db.jl")
 
-@testset "read_config_test" begin
+@testset "parameter_set_from_config_test" begin
 
-    test_params, test_db = read_config("test-config.yaml")
+    if "test.sqlite" in readdir()
+        Base.Filesystem.rm("test.sqlite")
+    end
+    include("create-db.jl")
+    test_params = parameter_set_from_config("test-config.yaml")
 
     # Parameter set
     @test :group_size in propertynames(test_params)
@@ -17,27 +20,48 @@ include("create-db.jl")
     @test :parliament_majority in propertynames(test_params)
     @test :required_consensus in propertynames(test_params)
     @test :parties in propertynames(test_params)
-    @test :opinions in propertynames(test_params)
     @test test_params.parliament_size == 157
 
-    # Database
+    Base.Filesystem.rm("test.sqlite")
+
+end  # parameter_set_from_config_test
+
+
+@testset "load_database_test" begin
+
+    if "test.sqlite" in readdir()
+        Base.Filesystem.rm("test.sqlite")
+    end
+    if "test-faulty.sqlite" in readdir()
+        Base.Filesystem.rm("test-faulty.sqlite")
+    end
+    include("create-db.jl")
+    include("create-db-faulty.jl")
+    test_db = load_database("test.sqlite")
+
     @test SQLite.tables(test_db).name == ["party", "statement", "opinion"]
+    @test Negotiations.conforms_to_schema(test_db)
+    @test_throws AssertionError load_database("test-faulty.sqlite")
 
-end  # read_config_test
+    Base.Filesystem.rm("test.sqlite")
+    Base.Filesystem.rm("test-faulty.sqlite")
+
+end  # load_database_test
 
 
-@testset "extract_opinions_test" begin
 
-    test_params, test_db = read_config("test-config.yaml")
-    opinions = Negotiations.extract_opinions(test_db)
+# @testset "extract_opinions_test" begin
 
-    @test names(opinions) == ["party_id", "statement_id", "position"]
-    @test typeof(opinions) <: AbstractDataFrame
-    @test unique(opinions.party_id) == [1, 2, 3]
-    @test unique(opinions.statement_id) == [1, 2, 3]
-    @test Set(opinions.position) <= Set([-1, 0, 1])
+#     test_params, test_db = read_config("test-config.yaml")
+#     opinions = Negotiations.extract_opinions(test_db)
 
-end  # extract_opinions_test
+#     @test names(opinions) == ["party_id", "statement_id", "position"]
+#     @test typeof(opinions) <: AbstractDataFrame
+#     @test unique(opinions.party_id) == [1, 2, 3]
+#     @test unique(opinions.statement_id) == [1, 2, 3]
+#     @test Set(opinions.position) <= Set([-1, 0, 1])
+
+# end  # extract_opinions_test
 
 
 # @testset "calculate_parliament_size_test" begin
@@ -106,5 +130,4 @@ end  # extract_opinions_test
 # end  # negotiations_sample_test
 
 
-Base.Filesystem.rm("test.sqlite")
 

@@ -13,7 +13,8 @@ using SQLite
 export Agent
 export ParameterSet
 export Model
-export read_config
+export parameter_set_from_config
+export load_database
 export setup_model
 export simulate
 export sample
