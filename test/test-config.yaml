@@ -6,6 +6,6 @@ parliament:
     TEST_PARTY_3: 45
 parliament_majority: 79
 required_consensus: 0.8
-parties: ["TEST_PARTY_1", "TEST_PARTY_2"]
+parties: ["TP_1", "TP_2"]
 data_path: "test.sqlite"
 ---
