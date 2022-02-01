@@ -107,22 +107,6 @@ end
 
 
 """
-    opinions_view(db:SQLite.DB)
-
-Get a database view on the party opinions in a suitable database.
-"""
-function opinions_view(db::SQLite.DB)
-    return DBInterface.execute(
-        db,
-        """
-        SELECT party_id, statement_id, position
-        FROM opinion
-        """
-    ) |> DataFrame
-end
-
-
-"""
     calculate_parliament_size(config_dict::AbstractDict)
 
 Calculate the number of seats of the parliament given by a `config_dict`.

@@ -53,23 +53,6 @@ end
 
 
 """
-    party_opinions_view(db::SQLite.DB)
-
-Return a dataframe with party, statement and held position on that statement.
-"""
-function party_opinions_view(db::SQLite.DB)
-    return DBInterface.execute(
-        db,
-        """
-        SELECT party_shorthand, statement_id, position
-        FROM opinion JOIN party
-        ON opinion.party_id = party.party_id
-        """
-    ) |> DataFrame
-end
-
-
-"""
     Meeting
 
 When running a `Model`, each step is performed in a `Meeting`.
