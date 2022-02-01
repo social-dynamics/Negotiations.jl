@@ -25,8 +25,9 @@
 
 * [x] create new test database for testing
 * [x] finish new config procedure
-* [ ] finish new model setup
-* [ ] update tests to new workflow
+* [x] finish new model setup
+* [x] update tests to new workflow
+* [ ] 
 * [ ] refactor conforms_to_schema function
 * [ ] streamline up to model runs
 * [ ] implement axelrod convergence criterion
