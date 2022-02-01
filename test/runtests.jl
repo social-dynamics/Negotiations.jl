@@ -71,15 +71,24 @@ end  # load_database_test
 end  # opinions_view_test
 
 
-# @testset "setup_model_test" begin
-#     test_params = read_config("test-config.yaml")
-#     test_model = setup_model(
-#         test_params,
-#         [["TEST_PARTY_1", "TEST_PARTY_2"]]
-#     )
-#     @test test_model.parameter_set == test_params
-#     @test length(test_model.agents) == 20
-# end  # setup_model_test
+@testset "setup_model_test" begin
+
+    if "test.sqlite" in readdir()
+        Base.Filesystem.rm("test.sqlite")
+    end
+    include("create-db.jl")
+    test_params = parameter_set_from_config("test-config.yaml")
+    test_db = load_database("test.sqlite")
+
+    test_model = setup_model(test_params, test_db)
+    test_agents = Negotiations.create_agents(test_params, test_db)
+
+    @test test_model.parameter_set == test_params
+    @test length(test_model.agents) == 20
+    @test length(Set([a.party for a in test_model.agents])) == 2
+    @test length(test_agents) == 20
+
+end  # setup_model_test
 
 
 # @testset "meeting_test" begin
