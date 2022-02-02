@@ -17,8 +17,9 @@ export parameter_set_from_config
 export load_database
 export opinions_view
 export setup_model
-export simulate
-export sample
+# export simulate
+# export sample
+export run_model
 
 # Source scripts
 include("data_views.jl")
