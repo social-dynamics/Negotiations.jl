@@ -49,3 +49,4 @@ vignettes/*.pdf
 
 
 Manifest.toml
+test.sqlite

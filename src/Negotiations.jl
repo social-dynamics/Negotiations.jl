@@ -21,7 +21,7 @@ export simulate
 export sample
 
 # Source scripts
-include("views.jl")
+include("data_views.jl")
 include("config.jl")
 include("model.jl")
 include("simulation.jl")

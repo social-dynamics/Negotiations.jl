@@ -33,9 +33,9 @@ end
 
 
 """
-    create_agents(params::ParameterSet)
+    create_agents(params::ParameterSet, db::SQLite.DB)
 
-Create a vector of agents with the specifications from a `ParameterSet`.
+Create a vector of agents with the specifications from a `ParameterSet` and a database.
 """
 function create_agents(params::ParameterSet, db::SQLite.DB)
     agent_parties = reduce(vcat, fill.(params.parties, params.group_size))
@@ -43,7 +43,7 @@ function create_agents(params::ParameterSet, db::SQLite.DB)
         party => filter(p -> p.party_shorthand == party, party_opinions_view(db)).position
         for party in params.parties
     )
-    agent_opinions = [opinions[party] for party in agent_parties]
+    agent_opinions = [Float64.(opinions[party]) for party in agent_parties]
     agents = [
         Agent(i, p, deepcopy(o))
         for (i, (p, o)) in enumerate(zip(agent_parties, agent_opinions))

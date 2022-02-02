@@ -21,6 +21,30 @@
     * add stubbornness (only move by one in every dimension)
 
 
+
+## Convergence
+
+### IDEA 1:
+
+    * start counter for how many times there was no assimilate!
+    * if some_number > counter -> break
+
+### IDEA 2:
+
+    * 1s and 0s into array -> running mean
+    * if running mean < some_number -> break
+
+### IDEA 3: DOESN'T WORK!
+
+    * Compare hashes of two states as convergence?
+    * If same: increase counter
+    * Else: counter = 0
+    * If counter > k: break
+    * ?hash -> for hashing
+    * dispatch multiple hash functions for each type
+    * summarize in "deephash"
+
+
 # TODO
 
 * [x] create new test database for testing
