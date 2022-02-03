@@ -58,16 +58,14 @@ function format_data_for_database(data::DataFrame)
         push!(reshaped_array, deepcopy(current_statement))
     end
     right_side = DataFrame(reshaped_array, :auto)
-    # right_side_names = [i for i in 1:length(data.opinions[1])]
     right_side_names = Symbol.(1:ncol(right_side))
     rename!(right_side, right_side_names)
     left_side = select(data, Not(:opinions))
     data_formatted = hcat(left_side, right_side)
-    data_formatted = stack(data_formatted, 6:ncol(data_formatted))
-    rename!(data_formatted, Dict(:variable => :statement, :value => :position))
+    data_formatted = stack(data_formatted, 5:ncol(data_formatted))  # TODO: not ideal, better with pattern matching by column name?
+    rename!(data_formatted, Dict(:id => :agent_id, :variable => :statement, :value => :position))
     return data_formatted
 end
-
 
 
 """
@@ -96,15 +94,3 @@ function snap(data::DataFrame, scope::Symbol, val::Int)
     data[!, scope] .= val
     return data
 end
-
-
-# """
-#     assimilate!(sender::Agent, receiver::Agent)
-
-# Change one of the receiver's opinions to sender's opinion.
-# """
-# function assimilate!(sender::Agent, receiver::Agent)
-#     i = Random.rand(1:length(sender.opinions))
-#     receiver.opinions[i] = StatsBase.mean([sender.opinions[i], receiver.opinions[i]])
-#     return receiver
-# end
