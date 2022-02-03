@@ -23,6 +23,7 @@ export simulate
 # export run_model
 
 # Source scripts
+include("db_operations.jl")
 include("data_views.jl")
 include("config.jl")
 include("model.jl")
