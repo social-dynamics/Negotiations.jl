@@ -1,5 +1,5 @@
 """
-    run_model(model::Model, replicates::Int)
+    simulate(model::Model, replicates::Int)
 
 Run a model `replicates` number of times for every possible sequence of meetings.
 """
