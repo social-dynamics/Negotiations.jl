@@ -52,7 +52,7 @@ function format_data_for_database(data::DataFrame)
     reshaped_array = []
     for i in 1:length(data.opinions[1])
         current_statement = []
-        for (j, op) in enumerate(data.opinions)
+        for j in 1:length(data.opinions)
             push!(current_statement, data.opinions[j][i])
         end
         push!(reshaped_array, deepcopy(current_statement))
@@ -63,7 +63,7 @@ function format_data_for_database(data::DataFrame)
     rename!(right_side, right_side_names)
     left_side = select(data, Not(:opinions))
     data_formatted = hcat(left_side, right_side)
-    data_formatted = stack(d, 6:ncol(d))
+    data_formatted = stack(data_formatted, 6:ncol(data_formatted))
     rename!(data_formatted, (:variable => :statement, :value => :position))
     return data_formatted
 end
