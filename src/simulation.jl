@@ -42,8 +42,32 @@ function run_sequence(model::Model, sequence::AbstractArray, replicates::Int)
         push!(rep_data_list, snap(deepcopy(rep_data), :rep, rep))
     end
     seq_data = reduce(vcat, rep_data_list)
+    seq_data = format_data_for_database(seq_data)
     return seq_data
 end
+
+
+# prepare data for database
+function format_data_for_database(data::DataFrame)
+    reshaped_array = []
+    for i in 1:length(data.opinions[1])
+        current_statement = []
+        for (j, op) in enumerate(data.opinions)
+            push!(current_statement, data.opinions[j][i])
+        end
+        push!(reshaped_array, deepcopy(current_statement))
+    end
+    right_side = DataFrame(a, :auto)
+    # right_side_names = [i for i in 1:length(data.opinions[1])]
+    right_side_names = Symbol.(1:ncol(right_side))
+    rename!(right_side, right_side_names)
+    left_side = select(data, Not(:opinions))
+    data_formatted = hcat(left_side, right_side)
+    data_formatted = stack(d, 6:ncol(d))
+    rename!(data_formatted, (:variable => :statement, :value => :position))
+    return data_formatted
+end
+
 
 
 """
