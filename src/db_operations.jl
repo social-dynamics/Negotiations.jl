@@ -2,14 +2,14 @@ function create_results_table!(db)
     SQLite.execute(db, """
         CREATE TABLE IF NOT EXISTS results
         (
-            result_id INTEGER NOT NULL PRIMARY KEY,
-            agent_id INTEGER,
+            agent_id INTEGER NOT NULL,
             party TEXT,
-            step INTEGER,
-            rep INTEGER,
+            step INTEGER NOT NULL,
+            rep INTEGER NOT NULL,
             statement_id INTEGER NOT NULL,
             position REAL,
-            seq INTEGER
+            seq INTEGER NOT null,
+            PRIMARY KEY(agent_id, step, rep, statement_id, seq)
         );
     """)
     return true

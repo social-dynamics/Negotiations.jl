@@ -68,7 +68,7 @@ function format_data_for_database(data::DataFrame)
     data_formatted = hcat(left_side, right_side)
     data_formatted = stack(data_formatted, 5:ncol(data_formatted))  # TODO: not ideal, better with pattern matching by column name?
     rename!(data_formatted, Dict(:id => :agent_id, :variable => :statement_id, :value => :position))
-    # data_formatted[!, :result_id] = 1:nrow(data_formatted)
+    data_formatted[!, :result_id] = 1:nrow(data_formatted)
     return data_formatted
 end
 
