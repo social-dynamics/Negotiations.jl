@@ -8,6 +8,7 @@ using StatsBase
 using Random
 using Combinatorics
 using SQLite
+using ProgressMeter
 
 # Exports
 export Agent

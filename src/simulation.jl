@@ -6,7 +6,7 @@ Run a model `replicates` number of times for every possible sequence of meetings
 function simulate(model::Model, replicates::Int)
     sequences = permutations(collect(combinations(model.parameter_set.parties, 2)))
     sequence_data_list = DataFrame[]
-    for (seq_idx, seq) in enumerate(sequences)
+    @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
         seq_data = run_sequence(model, seq, replicates)
         push!(sequence_data_list, snap(seq_data, :seq, seq_idx))
     end
@@ -74,13 +74,13 @@ function snap(data::DataFrame, scope::Symbol, val::Int)
 end
 
 
-"""
-    assimilate!(sender::Agent, receiver::Agent)
+# """
+#     assimilate!(sender::Agent, receiver::Agent)
 
-Change one of the receiver's opinions to sender's opinion.
-"""
-function assimilate!(sender::Agent, receiver::Agent)
-    i = Random.rand(1:length(sender.opinions))
-    receiver.opinions[i] = StatsBase.mean([sender.opinions[i], receiver.opinions[i]])
-    return receiver
-end
+# Change one of the receiver's opinions to sender's opinion.
+# """
+# function assimilate!(sender::Agent, receiver::Agent)
+#     i = Random.rand(1:length(sender.opinions))
+#     receiver.opinions[i] = StatsBase.mean([sender.opinions[i], receiver.opinions[i]])
+#     return receiver
+# end
