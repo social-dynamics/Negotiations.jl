@@ -9,6 +9,7 @@ function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::Strin
     # sequence_data_list = DataFrame[]
     @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
         seq_data = run_sequence(model, seq, replicates)
+        seq_data = snap(seq_data, :seq, seq_idx)
         SQLite.load!(seq_data, db, "results")
         # push!(sequence_data_list, snap(seq_data, :seq, seq_idx))
     end
