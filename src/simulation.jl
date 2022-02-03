@@ -6,15 +6,13 @@ Run a model `replicates` number of times for every possible sequence of meetings
 function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::String = "simulation")
     sequences = permutations(collect(combinations(model.parameter_set.parties, 2)))
     create_results_table!(db)
-    # sequence_data_list = DataFrame[]
     @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
         seq_data = run_sequence(model, seq, replicates)
         seq_data = snap(seq_data, :seq, seq_idx)
         SQLite.load!(seq_data, db, "results")
-        # push!(sequence_data_list, snap(seq_data, :seq, seq_idx))
     end
-    # data = reduce(vcat, sequence_data_list)
-    # return collect(sequences), data
+    # TODO: put sequences with ids into database
+    #       necessary for reconstruction during analysis
     return true
 end
 
@@ -68,7 +66,6 @@ function format_data_for_database(data::DataFrame)
     data_formatted = hcat(left_side, right_side)
     data_formatted = stack(data_formatted, 5:ncol(data_formatted))  # TODO: not ideal, better with pattern matching by column name?
     rename!(data_formatted, Dict(:id => :agent_id, :variable => :statement_id, :value => :position))
-    # data_formatted[!, :result_id] = 1:nrow(data_formatted)
     return data_formatted
 end
 
