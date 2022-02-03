@@ -64,7 +64,7 @@ function format_data_for_database(data::DataFrame)
     left_side = select(data, Not(:opinions))
     data_formatted = hcat(left_side, right_side)
     data_formatted = stack(data_formatted, 6:ncol(data_formatted))
-    rename!(data_formatted, (:variable => :statement, :value => :position))
+    rename!(data_formatted, Dict(:variable => :statement, :value => :position))
     return data_formatted
 end
 
