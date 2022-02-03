@@ -57,7 +57,7 @@ function format_data_for_database(data::DataFrame)
         end
         push!(reshaped_array, deepcopy(current_statement))
     end
-    right_side = DataFrame(a, :auto)
+    right_side = DataFrame(reshaped_array, :auto)
     # right_side_names = [i for i in 1:length(data.opinions[1])]
     right_side_names = Symbol.(1:ncol(right_side))
     rename!(right_side, right_side_names)
