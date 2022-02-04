@@ -13,7 +13,7 @@ function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::Strin
     end
     # TODO: put sequences with ids into database
     #       necessary for reconstruction during analysis
-    return true
+    return collect(sequences)
 end
 
 
@@ -49,7 +49,11 @@ function run_sequence(model::Model, sequence::AbstractArray, replicates::Int)
 end
 
 
-# prepare data for database
+"""
+    format_data_for_database(data::DataFrame)
+
+Format the simulation data for storage in the database.
+"""
 function format_data_for_database(data::DataFrame)
     reshaped_array = []
     for i in 1:length(data.opinions[1])

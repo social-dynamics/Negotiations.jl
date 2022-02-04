@@ -18,7 +18,7 @@ end
 # # TODO:
 # function create_sequences_table(db)
 #     SQLite.execute(db, """
-#         CREATE TABLE IF NOT EXISTS results
+#         CREATE TABLE IF NOT EXISTS sequences
 #         (
             
 #         );
