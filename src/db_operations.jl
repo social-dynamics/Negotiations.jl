@@ -15,13 +15,18 @@ function create_results_table!(db)
     return true
 end
 
-# # TODO:
-# function create_sequences_table(db)
-#     SQLite.execute(db, """
-#         CREATE TABLE IF NOT EXISTS sequences
-#         (
-            
-#         );
-#     """)
-#     return true
-# end
+
+function create_sequences_table!(db)
+    SQLite.execute(db, """
+        CREATE TABLE IF NOT EXISTS sequences
+        (
+            seq_id INTEGER NOT NULL,
+            step INTEGER,
+            party_1 TEXT,
+            party_2 TEXT,
+            FOREIGN KEY(seq_id) REFERENCES results(seq),
+            PRIMARY KEY(seq_id, step)
+        );
+    """)
+    return true
+end
