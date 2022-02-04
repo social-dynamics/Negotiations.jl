@@ -18,17 +18,6 @@ function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::Strin
 end
 
 
-
-function format_sequences_for_database(sequences)
-    df = DataFrame()
-    for (i, seq) in enumerate(sequences)
-        for (j, mtg) in enumerate(seq)
-            push!(df, (seq_id = i, step = j, party_1 = mtg[1], party_2 = mtg[2]))
-        end
-    end
-    return df
-end
-
 """
     run_sequence(sequence::AbstractArray, replicates::Int)
 
@@ -41,7 +30,7 @@ function run_sequence(model::Model, sequence::AbstractArray, replicates::Int)
         rep_data = snap(DataFrame(deepcopy(model_tracker.agents)), :step, 0)  # track initial configuration
         for (step, comb) in enumerate(sequence)
             meeting = Meeting(model_tracker, comb)
-            counter = 0
+            # TODO: maybe plug-and-play with different opinion dynamics models
             for i in 1:10000  # TODO: write convergence criterion
                 negotiators = StatsBase.sample(meeting.participants, 2)
                 topic = Random.rand(1:length(negotiators[1].opinions))
@@ -83,6 +72,22 @@ function format_data_for_database(data::DataFrame)
     data_formatted = stack(data_formatted, 5:ncol(data_formatted))  # TODO: not ideal, better with pattern matching by column name?
     rename!(data_formatted, Dict(:id => :agent_id, :variable => :statement_id, :value => :position))
     return data_formatted
+end
+
+
+"""
+    format_sequences_for_database(sequences)
+
+Formats a sequence generator for storage in a result database.
+"""
+function format_sequences_for_database(sequences)
+    df = DataFrame()
+    for (i, seq) in enumerate(sequences)
+        for (j, mtg) in enumerate(seq)
+            push!(df, (seq_id = i, step = j, party_1 = mtg[1], party_2 = mtg[2]))
+        end
+    end
+    return df
 end
 
 
