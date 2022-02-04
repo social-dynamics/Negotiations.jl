@@ -20,5 +20,5 @@ using Negotiators
 params = parameter_set_from_config("config.yaml")
 db = load_database("db.sqlite")
 model = setup_model(params, db)
-sequences, data = simulate(model, 5)
+simulate(model, 5, db)
 ```
