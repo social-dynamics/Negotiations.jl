@@ -14,10 +14,12 @@ function simulate(
         # results_data = snap(results_data, :seq, seq_idx)
         # results_data = snap(results_data, :batchname, batchname)
         # SQLite.load!(results_data, db, "results")
-        run_model_on_sequence(model, seq, replicates) |>
-            snap(_, :seq, seq_idx) |>
-            snap(_, :batchname, batchname) |>
-            SQLite.load!(_, db, "results")
+        results = run_model_on_sequence(model, seq, replicates)
+        @chain results begin
+            snap(_, :seq, seq_idx)
+            snap(_, :batchname, batchname)
+        end
+        SQLite.load!(results, db, "results")
     end
     sequences_data = format_sequences_for_db(sequences)
     sequences_data = snap(sequences_data, :batchname, batchname)

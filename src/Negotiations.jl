@@ -9,6 +9,7 @@ using Random
 using Combinatorics
 using SQLite
 using ProgressMeter
+using Chain
 
 # Exports
 export Agent
