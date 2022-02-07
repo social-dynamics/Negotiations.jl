@@ -12,7 +12,7 @@ function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::Strin
         results_data = run_sequence(model, seq, replicates)
         results_data = snap(results_data, :seq, seq_idx)
         results_data = snap(results_data, :batchname, batchname)
-        SQLite.load!(seq_data, db, "results")
+        SQLite.load!(results_data, db, "results")
     end
     sequences_data = format_sequences_for_database(sequences)
     sequences_data = snap(sequences_data, :batchname, batchname)
