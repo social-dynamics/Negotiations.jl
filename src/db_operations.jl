@@ -35,7 +35,7 @@ function create_statement_table!(db::SQLite.DB)
 end
 
 
-function create_opinion_table(db::SQLite.DB)
+function create_opinion_table!(db::SQLite.DB)
     SQLite.execute(db, """
         CREATE TABLE IF NOT EXISTS opinion
         (
