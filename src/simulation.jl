@@ -3,19 +3,19 @@
 
 Run a model `replicates` number of times for every possible sequence of meetings.
 """
-function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::String = "simulation", seed::Int = 1)
+function simulate(
+    model::Model, replicates::Int, db::SQLite.DB;
+    batchname::String = "simulation", seed::Int = 1
+)
     Random.seed!(seed)
     sequences = permutations(collect(combinations(model.parameter_set.parties, 2)))
-    # create_results_table!(db)
-    # create_sequences_table!(db)
     @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
-    # for (seq_idx, seq) in enumerate(sequences)
-        results_data = run_sequence(model, seq, replicates)
+        results_data = run_model_on_sequence(model, seq, replicates)
         results_data = snap(results_data, :seq, seq_idx)
         results_data = snap(results_data, :batchname, batchname)
         SQLite.load!(results_data, db, "results")
     end
-    sequences_data = format_sequences_for_database(sequences)
+    sequences_data = format_sequences_for_db(sequences)
     sequences_data = snap(sequences_data, :batchname, batchname)
     SQLite.load!(sequences_data, db, "sequences")
     return true
@@ -27,7 +27,7 @@ end
 
 Run the model `replicates` times for a given `sequence`.
 """
-function run_sequence(model::Model, sequence::AbstractArray, replicates::Int)
+function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates::Int)
     rep_data_list = DataFrame[]
     for rep in 1:replicates
         model_tracker = deepcopy(model)
@@ -49,17 +49,17 @@ function run_sequence(model::Model, sequence::AbstractArray, replicates::Int)
         push!(rep_data_list, snap(deepcopy(rep_data), :rep, rep))
     end
     seq_data = reduce(vcat, rep_data_list)
-    seq_data = format_data_for_database(seq_data)
+    seq_data = format_results_for_db(seq_data)
     return seq_data
 end
 
 
 """
-    format_data_for_database(data::DataFrame)
+    format_results_for_db(data::DataFrame)
 
 Format the simulation data for storage in the database.
 """
-function format_data_for_database(data::DataFrame)
+function format_results_for_db(data::DataFrame)
     reshaped_array = []
     for i in 1:length(data.opinions[1])
         current_statement = []
@@ -80,11 +80,11 @@ end
 
 
 """
-    format_sequences_for_database(sequences)
+    format_sequences_for_db(sequences)
 
 Formats a sequence generator for storage in a result database.
 """
-function format_sequences_for_database(sequences)
+function format_sequences_for_db(sequences)
     df = DataFrame()
     for (i, seq) in enumerate(sequences)
         for (j, mtg) in enumerate(seq)

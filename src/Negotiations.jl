@@ -14,14 +14,12 @@ using ProgressMeter
 export Agent
 export ParameterSet
 export Model
+export initialize_db
 export parameter_set_from_config
 export load_database
 export opinions_view
 export setup_model
 export simulate
-export initialize_db
-# export sample
-# export run_model
 
 # Source scripts
 include("db_operations.jl")
