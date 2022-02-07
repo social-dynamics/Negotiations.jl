@@ -81,7 +81,7 @@ function format_results_for_db(data::DataFrame)
     data_formatted = @chain begin
         hcat(left_side, right_side)
         # stack(_, 5:ncol(_))  # TODO: not ideal, better with pattern matching by column name?
-        stack(_, [col for col in names(_) if occursin(r"\d*", col)])
+        stack(_, [col for col in names(_) if occursin(r"[0-9]*", string(col))])
         rename(_, Dict(:id => :agent_id, :variable => :statement_id, :value => :position))
     end
     return data_formatted
