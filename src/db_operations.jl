@@ -8,8 +8,9 @@ function create_results_table!(db)
             rep INTEGER NOT NULL,
             statement_id INTEGER NOT NULL,
             position REAL,
-            seq INTEGER NOT null,
-            PRIMARY KEY(agent_id, step, rep, statement_id, seq)
+            seq INTEGER NOT NULL,
+            batchname TEXT,
+            PRIMARY KEY(agent_id, step, rep, statement_id, seq, batchname)
         );
     """)
     return true
@@ -24,8 +25,9 @@ function create_sequences_table!(db)
             step INTEGER,
             party_1 TEXT,
             party_2 TEXT,
-            FOREIGN KEY(seq_id) REFERENCES results(seq),
-            PRIMARY KEY(seq_id, step)
+            batchname TEXT,
+            FOREIGN KEY(seq_id, batchname) REFERENCES results(seq, batchname),
+            PRIMARY KEY(seq_id, batchname, step)
         );
     """)
     return true

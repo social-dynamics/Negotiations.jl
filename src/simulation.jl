@@ -3,16 +3,19 @@
 
 Run a model `replicates` number of times for every possible sequence of meetings.
 """
-function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::String = "simulation")
+function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::String = "simulation", seed::Int = 1)
+    Random.seed!(seed)
     sequences = permutations(collect(combinations(model.parameter_set.parties, 2)))
     create_results_table!(db)
     create_sequences_table!(db)
     @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
-        seq_data = run_sequence(model, seq, replicates)
-        seq_data = snap(seq_data, :seq, seq_idx)
+        results_data = run_sequence(model, seq, replicates)
+        results_data = snap(results_data, :seq, seq_idx)
+        results_data = snap(results_data, :batchname, batchname)
         SQLite.load!(seq_data, db, "results")
     end
     sequences_data = format_sequences_for_database(sequences)
+    sequences_data = snap(sequences_data, :batchname, batchname)
     SQLite.load!(sequences_data, db, "sequences")
     return true
 end
