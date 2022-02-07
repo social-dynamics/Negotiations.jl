@@ -10,19 +10,17 @@ function simulate(
     Random.seed!(seed)
     sequences = permutations(collect(combinations(model.parameter_set.parties, 2)))
     @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
-        # results_data = run_model_on_sequence(model, seq, replicates)
-        # results_data = snap(results_data, :seq, seq_idx)
-        # results_data = snap(results_data, :batchname, batchname)
-        # SQLite.load!(results_data, db, "results")
-        results = @chain begin
+        results_data = @chain begin
             run_model_on_sequence(model, seq, replicates)
             snap(_, :seq, seq_idx)
             snap(_, :batchname, batchname)
         end
-        SQLite.load!(results, db, "results")
+        SQLite.load!(results_data, db, "results")
     end
-    sequences_data = format_sequences_for_db(sequences)
-    sequences_data = snap(sequences_data, :batchname, batchname)
+    sequences_data = @chain begin
+        format_sequences_for_db(sequences)
+        snap(_, :batchname, batchname)
+    end
     SQLite.load!(sequences_data, db, "sequences")
     return true
 end
@@ -34,13 +32,14 @@ end
 Run the model `replicates` times for a given `sequence`.
 """
 function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates::Int)
-    rep_data_list = DataFrame[]
+    replicate_list = DataFrame[]
     for rep in 1:replicates
         model_tracker = deepcopy(model)
         rep_data = snap(DataFrame(deepcopy(model_tracker.agents)), :step, 0)  # track initial configuration
         for (step, comb) in enumerate(sequence)
             meeting = Meeting(model_tracker, comb)
             # TODO: maybe plug-and-play with different opinion dynamics models
+            # TODO: this implementation is crap -> improve
             for i in 1:10000  # TODO: write convergence criterion
                 negotiators = StatsBase.sample(meeting.participants, 2)
                 topic = Random.rand(1:length(negotiators[1].opinions))
@@ -52,9 +51,9 @@ function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates
             step_data = DataFrame(deepcopy(model_tracker.agents))
             rep_data = reduce(vcat, [rep_data, snap(step_data, :step, step)])
         end
-        push!(rep_data_list, snap(deepcopy(rep_data), :rep, rep))
+        push!(replicate_list, snap(deepcopy(rep_data), :rep, rep))
     end
-    seq_data = reduce(vcat, rep_data_list)
+    seq_data = reduce(vcat, replicate_list)
     seq_data = format_results_for_db(seq_data)
     return seq_data
 end
@@ -74,13 +73,16 @@ function format_results_for_db(data::DataFrame)
         end
         push!(reshaped_array, deepcopy(current_statement))
     end
-    right_side = DataFrame(reshaped_array, :auto)
-    right_side_names = Symbol.(1:ncol(right_side))
-    rename!(right_side, right_side_names)
     left_side = select(data, Not(:opinions))
-    data_formatted = hcat(left_side, right_side)
-    data_formatted = stack(data_formatted, 5:ncol(data_formatted))  # TODO: not ideal, better with pattern matching by column name?
-    rename!(data_formatted, Dict(:id => :agent_id, :variable => :statement_id, :value => :position))
+    right_side = @chain begin
+        DataFrame(reshaped_array, :auto)
+        rename(_, Symbol.(1:ncol(right_side)))
+    end
+    data_formatted = @chain begin
+        hcat(left_side, right_side)
+        stack(_, 5:ncol(_))  # TODO: not ideal, better with pattern matching by column name?
+        rename(_, Dict(:id => :agent_id, :variable => :statement_id, :value => :position))
+    end
     return data_formatted
 end
 
