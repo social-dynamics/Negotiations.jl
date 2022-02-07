@@ -76,7 +76,7 @@ function format_results_for_db(data::DataFrame)
     left_side = select(data, Not(:opinions))
     right_side = @chain begin
         DataFrame(reshaped_array, :auto)
-        rename(_, Symbol.(1:ncol(right_side)))
+        rename(_, Symbol.(1:ncol(_)))
     end
     data_formatted = @chain begin
         hcat(left_side, right_side)
