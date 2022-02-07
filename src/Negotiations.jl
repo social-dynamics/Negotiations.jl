@@ -19,6 +19,7 @@ export load_database
 export opinions_view
 export setup_model
 export simulate
+export initialize_db
 # export sample
 # export run_model
 
