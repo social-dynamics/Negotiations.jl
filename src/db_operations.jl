@@ -1,5 +1,5 @@
 function initialize_db(db_name::String)
-    db = SQLite.DB("./" * db_name * ".sqlite")
+    db = SQLite.DB(joinpath(db_name * ".sqlite"))
     create_party_table!(db)
     create_statement_table!(db)
     create_opinion_table!(db)
