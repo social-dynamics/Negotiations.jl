@@ -15,7 +15,7 @@ function create_party_table!(db::SQLite.DB)
         (
             party_id INTEGER NOT NULL PRIMARY KEY,
             party_shorthand TEXT,
-            party_name TEXT,
+            party_name TEXT
         );
     """)
     return true
@@ -28,7 +28,7 @@ function create_statement_table!(db::SQLite.DB)
         (
             statement_id INTEGER NOT NULL PRIMARY KEY,
             statement_title TEXT,
-            statement TEXT,
+            statement TEXT
         );
     """)
     return true
@@ -64,7 +64,7 @@ function create_results_table!(db)
             position REAL,
             seq INTEGER NOT NULL,
             batchname TEXT,
-            PRIMARY KEY(agent_id, step, rep, statement_id, seq, batchname),
+            PRIMARY KEY(agent_id, step, rep, statement_id, seq, batchname)
         );
     """)
     return true
@@ -81,7 +81,7 @@ function create_sequences_table!(db)
             party_2 TEXT,
             batchname TEXT,
             FOREIGN KEY(seq_id, batchname) REFERENCES results(seq, batchname),
-            PRIMARY KEY(seq_id, batchname, step),
+            PRIMARY KEY(seq_id, batchname, step)
         );
     """)
     return true
