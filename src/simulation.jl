@@ -8,17 +8,12 @@ function simulate(model::Model, replicates::Int, db::SQLite.DB; batchname::Strin
     sequences = permutations(collect(combinations(model.parameter_set.parties, 2)))
     # create_results_table!(db)
     # create_sequences_table!(db)
-    # @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
-    for (seq_idx, seq) in enumerate(sequences)
-        print("break point 1\n")
+    @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
+    # for (seq_idx, seq) in enumerate(sequences)
         results_data = run_sequence(model, seq, replicates)
-        print("break point 2\n")
         results_data = snap(results_data, :seq, seq_idx)
-        print("break point 3\n")
         results_data = snap(results_data, :batchname, batchname)
-        print("break point 4\n")
         SQLite.load!(results_data, db, "results")
-        print("break point 5\n")
     end
     sequences_data = format_sequences_for_database(sequences)
     sequences_data = snap(sequences_data, :batchname, batchname)
@@ -118,7 +113,7 @@ end
 
 
 """
-    snap(data::DataFrame, scope::Symbol, val::Int)
+    snap(data::DataFrame, scope::Symbol, val::Union{Int, String})
 
 Make a snapshot of the simulation data at `val` at `scope`.
 """
