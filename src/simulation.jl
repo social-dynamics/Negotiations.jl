@@ -116,7 +116,7 @@ end
 
 Make a snapshot of the simulation data at `val` at `scope`.
 """
-function snap(data::DataFrame, scope::Symbol, val::Int)
+function snap(data::DataFrame, scope::Symbol, val::Any)
     data[!, scope] .= val
     return data
 end
