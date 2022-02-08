@@ -1,6 +1,6 @@
 name = "Negotiations"
 uuid = "24e1d0de-b6f9-53d0-bef9-cf43d4d39321"
-version = "0.0.1"
+version = "0.1.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
