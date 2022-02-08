@@ -10,6 +10,7 @@ using Combinatorics
 using SQLite
 using ProgressMeter
 using Chain
+using Distributed
 
 # Exports
 export Agent

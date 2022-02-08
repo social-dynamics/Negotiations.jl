@@ -33,7 +33,7 @@ Run the model `replicates` times for a given `sequence`.
 """
 function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates::Int)
     replicate_list = DataFrame[]
-    for rep in 1:replicates
+    @sync @distributed for rep in 1:replicates
         model_tracker = deepcopy(model)
         rep_data = snap(DataFrame(deepcopy(model_tracker.agents)), :step, 0)  # track initial configuration
         for (step, comb) in enumerate(sequence)
