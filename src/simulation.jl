@@ -39,16 +39,32 @@ function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates
         rep_data = snap(DataFrame(deepcopy(model_tracker.agents)), :step, 0)  # track initial configuration
         for (step, comb) in enumerate(sequence)
             meeting = Meeting(model_tracker, comb)
-            # TODO: maybe plug-and-play with different opinion dynamics models
-            # TODO: this implementation is crap -> improve
-            for i in 1:10000  # TODO: write convergence criterion
-                negotiators = StatsBase.sample(meeting.participants, 2)
-                topic = Random.rand(1:length(negotiators[1].opinions))
-                new_opinions = get_new_opinions(negotiators, topic)
-                for i in 1:length(new_opinions)
-                    negotiators[i].opinions[topic] = new_opinions[i]
+
+            # TODO:
+            #   * maybe plug-and-play with different opinion dynamics models
+            #   * this implementation is crap -> improve
+            #   * write convergence criterion
+            #   * This might be a modular part where different models can be used
+
+            # ---> IMPROVE!
+            begin
+                for i in 1:10000
+                    negotiators = StatsBase.sample(meeting.participants, 2)
+                    topic = Random.rand(1:length(negotiators[1].opinions))
+                    opinions = [agent.opinions[topic] for agent in negotiators]
+                    new_opinions = []
+                    for i in 1:length(opinions)
+                        w = ones(length(negotiators))
+                        w[i] = 2.0  # could be a stubbornness parameter to the model
+                        push!(new_opinions, StatsBase.mean(opinions, weights(w)))
+                    end
+                    for i in 1:length(new_opinions)
+                        negotiators[i].opinions[topic] = new_opinions[i]
+                    end
                 end
             end
+            # <--- IMPROVE!
+
             step_data = DataFrame(deepcopy(model_tracker.agents))
             rep_data = reduce(vcat, [rep_data, snap(step_data, :step, step)])
         end
@@ -57,6 +73,23 @@ function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates
     seq_data = reduce(vcat, replicate_list)
     seq_data = format_results_for_db(seq_data)
     return seq_data
+end
+
+
+"""
+    get_new_opinions(negotiators::Array{Agent}, topic::Int)
+
+Get new opinions on `topic` after interaction of `negotiators`.
+"""
+function get_new_opinions(negotiators::Array{Agent}, topic::Int)
+    opinions = [agent.opinions[topic] for agent in negotiators]
+    new_opinions = []
+    for i in 1:length(opinions)
+        w = ones(length(negotiators))
+        w[i] = 2.0  # TODO: could be a stubbornness parameter to the model
+        push!(new_opinions, StatsBase.mean(opinions, weights(w)))
+    end
+    return new_opinions
 end
 
 
@@ -102,23 +135,6 @@ function format_sequences_for_db(sequences)
         end
     end
     return df
-end
-
-
-"""
-    get_new_opinions(negotiators::Array{Agent}, topic::Int)
-
-Get new opinions on `topic` after interaction of `negotiators`.
-"""
-function get_new_opinions(negotiators::Array{Agent}, topic::Int)
-    opinions = [agent.opinions[topic] for agent in negotiators]
-    new_opinions = []
-    for i in 1:length(opinions)
-        w = ones(length(negotiators))
-        w[i] = 2.0  # TODO: could be a stubbornness parameter to the model
-        push!(new_opinions, StatsBase.mean(opinions, weights(w)))
-    end
-    return new_opinions
 end
 
 
