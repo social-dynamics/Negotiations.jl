@@ -52,8 +52,10 @@
 * [x] finish new model setup
 * [x] update tests to new workflow
 * [x] streamline up to model runs
+* [ ] inertia as a function of similarity
 * [ ] refactor conforms_to_schema function
 * [ ] weights for opinions
+* [ ] parameter set into database (with batchname as identifier)
 
 
 # MAYBE TODO:
