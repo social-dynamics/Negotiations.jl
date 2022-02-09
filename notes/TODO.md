@@ -18,7 +18,7 @@
     * opinion variability within group  // DISCUSS -> probably later
     * aim at minimal coalition
         * seats in Bundestag as "currency"
-    * add stubbornness (only move by one in every dimension)
+    * add stubbornness (only move by one in every dimension) [COMMENT 2022-02-09: kind of included now, needs further cosideration]
 
 
 
@@ -45,18 +45,17 @@
     * summarize in "deephash"
 
 
-# TODO
+# TODO:
 
 * [x] create new test database for testing
 * [x] finish new config procedure
 * [x] finish new model setup
 * [x] update tests to new workflow
-* [ ] 
+* [x] streamline up to model runs
 * [ ] refactor conforms_to_schema function
-* [ ] streamline up to model runs
-* [ ] implement axelrod convergence criterion
-* [ ] convergence have_consensus
-* [ ] convergence can_form_government
-* [ ] reward function (how close is the final consensus to the initial opinion?)
 * [ ] weights for opinions
+
+
+# MAYBE TODO:
+* [ ] reward function (how close is the final consensus to the initial opinion?)
 * [ ] interactive "walkthrough" create_params function
