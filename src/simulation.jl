@@ -71,10 +71,10 @@ function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates
 
             begin
                 for topic in 1:length(model.agents[1].opinions)  # iterate over all opinions
-                    negotiators = StatsBase.sample(meeting.participants, 2)
-                    negotiators_opinions = [agent.opinions[topic] for agent in negotiators]
-                    for _ in 1:100
-                        for (i, agent) in enumerate(negotiators)
+                    for _ in 1:100  # scaling of homophily can be done via the stubbornness / inertia parameter (to be introduced later)
+                        negotiators = StatsBase.sample(meeting.participants, 2)
+                        negotiators_opinions = [agent.opinions[topic] for agent in negotiators]
+                        for (i, agent) in enumerate(negotiators)  # in principle, this allows for more than 2-way exchanges
                             w = ones(length(negotiators_opinions))
                             w[i] = 10.0  # again: stubbornness / inertia parameter?
                             agent.opinions[topic] = StatsBase.mean(negotiators_opinions, StatsBase.weights(w))
