@@ -68,42 +68,31 @@ Load a database from a given path while making sure that it conforms to the mode
 """
 function load_database(db_path::String)
     db = SQLite.DB(db_path)
-    # TODO: make sure this works
-    # @assert conforms_to_schema(db) "The database you provided is not suitable for this model."
+    @assert conforms_to_schema(db) "The database you provided is not suitable for this model."
     return db
 end
 
 
-# TODO: works, but requires refactoring
-#       this is rather a proof-of-concept than an actual solution
+# TODO: implement properly
 """
     conforms_to_schema(db::SQLite.DB)
 
 Check if a given database conforms to the schema required by Negotiations.jl.
 """
 function conforms_to_schema(db::SQLite.DB)
-    # with some friendly help from:
-    # -- https://stackoverflow.com/questions/6460671/sqlite-schema-information-metadata
-
     schema_df = DBInterface.execute(db, """
-        SELECT name, sql
+        SELECT name
         FROM sqlite_master
         WHERE type='table'
         ORDER BY name
     """) |> DataFrame
-
-    opinion_schema = "CREATE TABLE opinion\n(\n    party_id INTEGER NOT NULL,\n    statement_id INTEGER NOT NULL,\n    position INTEGER,\n    position_rationale TEXT,\n    FOREIGN KEY(party_id) REFERENCES party(party_id),\n    FOREIGN KEY(statement_id) REFERENCES statement(statement_id),\n    PRIMARY KEY(party_id, statement_id)\n)"
-
-    party_schema = "CREATE TABLE party\n(\n    party_id INTEGER NOT NULL PRIMARY KEY,\n    party_shorthand TEXT,\n    party_name TEXT\n)"
-
-    statement_schema = "CREATE TABLE statement\n(\n    statement_id INTEGER NOT NULL PRIMARY KEY,\n    statement_title TEXT,\n    statement TEXT\n)"
-
     return (
-        (schema_df.sql[1] == opinion_schema)
-        & (schema_df.sql[2] == party_schema)
-        & (schema_df.sql[3] == statement_schema)
+        ("opinion" in schema_df.name)
+        & ("party" in schema_df.name)
+        & ("results" in schema_df.name)
+        & ("sequences" in schema_df.name)
+        & ("statement" in schema_df.name)
     )
-
 end
 
 

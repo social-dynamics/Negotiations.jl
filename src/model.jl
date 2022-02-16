@@ -5,7 +5,7 @@ The agent type for the party negotiation model.
 """
 mutable struct Agent
     id::Integer
-    party::String  # Symbol? -> some sort of Enum?
+    party::String
     opinions::AbstractArray
 end
 

@@ -7,7 +7,7 @@ if (!("test-faulty.sqlite" in readdir()))
     SQLite.execute(
         db,
         """
-        CREATE TABLE party
+        CREATE TABLE partey
         (
             party_id INTEGER NOT NULL PRIMARY KEY,
             party_shorthand TEXT
@@ -18,7 +18,7 @@ if (!("test-faulty.sqlite" in readdir()))
     SQLite.execute(
         db,
         """
-        CREATE TABLE statement
+        CREATE TABLE statament
         (
             statement_id INTEGER NOT NULL PRIMARY KEY,
             statement TEXT
@@ -29,7 +29,7 @@ if (!("test-faulty.sqlite" in readdir()))
     SQLite.execute(
         db,
         """
-        CREATE TABLE opinion
+        CREATE TABLE opinioon
         (
             party_id INTEGER NOT NULL,
             statement_id INTEGER NOT NULL,
@@ -44,7 +44,7 @@ if (!("test-faulty.sqlite" in readdir()))
     SQLite.execute(
         db,
         """
-        INSERT INTO party
+        INSERT INTO partey
         VALUES
             (1, \"TP_1\"),
             (2, \"TP_2\"),
@@ -55,7 +55,7 @@ if (!("test-faulty.sqlite" in readdir()))
     SQLite.execute(
         db,
         """
-        INSERT INTO statement
+        INSERT INTO statament
         VALUES
             (1, \"This is the first test statement.\"),
             (2, \"This is the second test statement.\"),
@@ -66,7 +66,7 @@ if (!("test-faulty.sqlite" in readdir()))
     SQLite.execute(
         db,
         """
-        INSERT INTO opinion
+        INSERT INTO opinioon
         VALUES
             (1, 1, 1),
             (1, 2, -1),

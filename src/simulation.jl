@@ -46,28 +46,7 @@ function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates
 
             # TODO:
             #   * maybe plug-and-play with different opinion dynamics models
-            #   * this implementation is crap -> improve
-            #   * write convergence criterion
             #   * This might be a modular part where different models can be used
-
-            # ---> IMPROVE!
-            # begin
-            #     for i in 1:10000
-            #         negotiators = StatsBase.sample(meeting.participants, 2)
-            #         topic = Random.rand(1:length(negotiators[1].opinions))
-            #         opinions = [agent.opinions[topic] for agent in negotiators]
-            #         new_opinions = []
-            #         for i in 1:length(opinions)
-            #             w = ones(length(negotiators))
-            #             w[i] = 2.0  # could be a stubbornness parameter to the model
-            #             push!(new_opinions, StatsBase.mean(opinions, weights(w)))
-            #         end
-            #         for i in 1:length(new_opinions)
-            #             negotiators[i].opinions[topic] = new_opinions[i]
-            #         end
-            #     end
-            # end
-            # <--- IMPROVE!
 
             begin
                 for topic in 1:length(model.agents[1].opinions)  # iterate over all opinions
@@ -94,23 +73,6 @@ function run_model_on_sequence(model::Model, sequence::AbstractArray, replicates
 end
 
 
-# """
-#     get_new_opinions(negotiators::Array{Agent}, topic::Int)
-
-# Get new opinions on `topic` after interaction of `negotiators`.
-# """
-# function get_new_opinions(negotiators::Array{Agent}, topic::Int)
-#     opinions = [agent.opinions[topic] for agent in negotiators]
-#     new_opinions = []
-#     for i in 1:length(opinions)
-#         w = ones(length(negotiators))
-#         w[i] = 2.0  # TODO: could be a stubbornness parameter to the model
-#         push!(new_opinions, StatsBase.mean(opinions, weights(w)))
-#     end
-#     return new_opinions
-# end
-
-
 """
     format_results_for_db(data::DataFrame)
 
@@ -133,7 +95,6 @@ function format_results_for_db(data::DataFrame)
     data_formatted = @chain begin
         hcat(left_side, right_side)
         stack(_, 5:ncol(_))  # TODO: not ideal, better with pattern matching by column name?
-        # stack(_, [col for col in names(_) if occursin(r"[0-9]*", string(col))])
         rename(_, Dict(:id => :agent_id, :variable => :statement_id, :value => :position))
     end
     return data_formatted

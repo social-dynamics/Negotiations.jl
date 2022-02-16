@@ -1,48 +1,9 @@
 using SQLite
+using Negotiations
 
 if (!("test.sqlite" in readdir()))
 
-    db = SQLite.DB("test.sqlite")
-
-    SQLite.execute(
-        db,
-        """
-        CREATE TABLE party
-        (
-            party_id INTEGER NOT NULL PRIMARY KEY,
-            party_shorthand TEXT,
-            party_name TEXT
-        );
-        """
-    )
-
-    SQLite.execute(
-        db,
-        """
-        CREATE TABLE statement
-        (
-            statement_id INTEGER NOT NULL PRIMARY KEY,
-            statement_title TEXT,
-            statement TEXT
-        );
-        """
-    )
-
-    SQLite.execute(
-        db,
-        """
-        CREATE TABLE opinion
-        (
-            party_id INTEGER NOT NULL,
-            statement_id INTEGER NOT NULL,
-            position INTEGER,
-            position_rationale TEXT,
-            FOREIGN KEY(party_id) REFERENCES party(party_id),
-            FOREIGN KEY(statement_id) REFERENCES statement(statement_id),
-            PRIMARY KEY(party_id, statement_id)
-        );
-        """
-    )
+    db = initialize_db("test")
 
     SQLite.execute(
         db,
