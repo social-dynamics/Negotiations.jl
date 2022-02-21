@@ -16,19 +16,24 @@ using Distributed
 export Agent
 export ParameterSet
 export Model
+export Meeting
 export initialize_db
 export parameter_set_from_config
 export load_database
 export opinions_view
 export setup_model
 export simulate
+export Rule
+export BoundedConfidence
+export Identity
 
 # Source scripts
 include("db_operations.jl")
 include("data_views.jl")
 include("config.jl")
 include("model.jl")
+include("rules.jl")
 include("simulation.jl")
-include("convergence.jl")
+# include("convergence.jl")
 
 end  # module
