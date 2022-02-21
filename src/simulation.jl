@@ -61,24 +61,7 @@ function run_model_on_sequence(model::Model, rule::Rule, sequence::AbstractArray
         rep_data = snap(DataFrame(deepcopy(model_tracker.agents)), :step, 0)  # track initial configuration
         for (step, comb) in enumerate(sequence)
             meeting = Meeting(model_tracker, comb)  # we are in a meeting now
-            # TODO:
-            #   * maybe plug-and-play with different opinion dynamics models
-            #   * This might be a modular part where different models can be used
-            # begin
-            #     for topic in 1:length(meeting.agents[1].opinions)  # iterate over all opinions
-            #         for _ in 1:100  # scaling of homophily can be done via the stubbornness / inertia parameter (to be introduced later)
-            #             negotiators = StatsBase.sample(meeting.participants, 2)
-            #             negotiators_opinions = [agent.opinions[topic] for agent in negotiators]
-            #             for (i, agent) in enumerate(negotiators)  # in principle, this allows for more than 2-way exchanges
-            #                 w = ones(length(negotiators_opinions))
-            #                 w[i] = 10.0  # again: stubbornness / inertia parameter?
-            #                 agent.opinions[topic] = StatsBase.mean(negotiators_opinions, StatsBase.weights(w))
-            #             end
-            #         end
-            #     end
-            # end
             rule.update!(meeting)
-
             step_data = DataFrame(deepcopy(model_tracker.agents))
             rep_data = reduce(vcat, [rep_data, snap(step_data, :step, step)])
         end
