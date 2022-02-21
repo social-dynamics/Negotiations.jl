@@ -13,7 +13,7 @@ function get_bounded_confidence_func(bc::AbstractFloat, inertia::AbstractFloat)
             for _ in 1:100  # scaling of homophily can be done via the stubbornness / inertia parameter (to be introduced later)
                 negotiators = StatsBase.sample(meeting.participants, 2)
                 # TODO: refactor if more negotiators in consideration
-                if abs(negotiators[1].opinions[topic] - negotiators[2].opinions[topic]) < bc
+                if abs(negotiators[1].opinions[topic] - negotiators[2].opinions[topic]) <= bc
                     negotiators_opinions = [agent.opinions[topic] for agent in negotiators]
                     for (i, agent) in enumerate(negotiators)  # in principle, this allows for more than 2-way exchanges
                         w = ones(Float64, length(negotiators_opinions))
