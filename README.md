@@ -21,7 +21,8 @@ using Negotiations
 params = parameter_set_from_config("config.yaml")
 db = load_database("db.sqlite")
 model = setup_model(params, db)
-simulate(model, 5, db, batchname = "my_batchname")
+rule = BoundedConfidence(bc = 1.0, inertia = 10.0)
+simulate(model, rule, 5, db, batchname = "my_batchname")
 ```
 
 
@@ -29,12 +30,15 @@ simulate(model, 5, db, batchname = "my_batchname")
 
 At this stage, this model is highly speculative and should not be taken at face value.
 We seek to find a way to think about the negotiation process in a multi-party political system by integrating opinion dynamics models with a model of sequential party negotiations.
-The opinion dynamics model used in this model might become a "pluggable" component of the model, i.e., different models of opinion exchange could be tested in this framework.
 For the current implementation, we make several simplifying assumptions:
 
 * The *Wahlomat* data is a sufficiently accurate and representative depiction of the political issues that are to be negotiated.
 * The formation of a government in a democratic multi-party political system is preceded by a series of negotiations between different parties.
 * More information specific to an election at hand can be included in the model (for instance, in the German federal elections, most parties give statements which other parties they are willing to negotiate with).
+
+The opinion dynamics model to be used in the simulation is "pluggable", i.e., you can create your own by subtyping the `Rule` type provided in this module.
+A `Rule` has one field `update!` which is a `Function` that modifies a `Meeting` in-place.
+Look into `src/rules.jl` to see how the `BoundedConfidence` rule is generated.
 
 
 ## Important factors that are still missing (WIP)
