@@ -92,6 +92,7 @@ function conforms_to_schema(db::SQLite.DB)
         & ("results" in schema_df.name)
         & ("sequences" in schema_df.name)
         & ("statement" in schema_df.name)
+        # UPDATE with new tables if required
     )
 end
 

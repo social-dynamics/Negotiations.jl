@@ -5,8 +5,9 @@ Run a model `replicates` number of times with a given `rule` for every possible 
 """
 function simulate(
     model::Model, rule::Rule, replicates::Int, db::SQLite.DB;
-    batchname::String = "simulation", seed::Int = 1
+    batchname::String, seed::Int = 1
 )
+    register_model!(db, model, batchname)
     Random.seed!(seed)
     sequences = permutations(collect(combinations(model.parameter_set.parties, 2)))
     @showprogress 1 "Running simulations..." for (seq_idx, seq) in enumerate(sequences)
@@ -22,6 +23,27 @@ function simulate(
         snap(_, :batchname, batchname)
     end
     SQLite.load!(sequences_data, db, "sequences")
+    return true
+end
+
+
+"""
+    register_model!(db::SQLite.DB, model::Model, batchname::String)
+
+Register a given model in the simulation database.
+"""
+function register_model!(db::SQLite.DB, model::Model, batchname::String)
+    parliament_table = stack(DataFrame(sort(collect(model.parameter_set.parliament))), Not([]))
+    rename!(parliament_table, [:party_shorthand, :seats])
+    parliament_table[!, :batchname] .= batchname
+    parameters_table = DataFrame(
+        batchname = batchname,
+        group_size = model.parameter_set.group_size,
+        parliament_majority = model.parameter_set.parliament_majority,
+        required_consensus = model.parameter_set.required_consensus
+    )
+    SQLite.load!(parliament_table, db, "parliament")
+    SQLite.load!(parameters_table, db, "parameters")
     return true
 end
 
@@ -66,8 +88,6 @@ function run_model_on_sequence(model::Model, rule::Rule, sequence::AbstractArray
     seq_data = format_results_for_db(seq_data)
     return seq_data
 end
-
-
 
 
 """

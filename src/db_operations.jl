@@ -5,6 +5,8 @@ function initialize_db(db_name::String)
     create_opinion_table!(db)
     create_results_table!(db)
     create_sequences_table!(db)
+    create_parliament_table!(db)
+    create_parameters_table!(db)
     return db
 end
 
@@ -82,6 +84,35 @@ function create_sequences_table!(db)
             batchname TEXT,
             FOREIGN KEY(seq_id, batchname) REFERENCES results(seq, batchname),
             PRIMARY KEY(seq_id, batchname, step)
+        );
+    """)
+    return true
+end
+
+
+function create_parliament_table!(db)
+    SQLite.execute(db, """
+        CREATE TABLE IF NOT EXISTS parliament
+        (
+            party_shorthand TEXT,
+            batchname TEXT,
+            seats INTEGER,
+            PRIMARY KEY(party_shorthand, batchname)
+        );
+    """)
+    return true
+end
+
+
+function create_parameters_table!(db)
+    SQLite.execute(db, """
+        CREATE TABLE IF NOT EXISTS parameters
+        (
+            batchname TEXT,
+            group_size INTEGER,
+            parliament_majority INTEGER,
+            required_consensus REAL,
+            PRIMARY KEY(batchname)
         );
     """)
     return true
