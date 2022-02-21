@@ -25,7 +25,8 @@ export setup_model
 export simulate
 export Rule
 export BoundedConfidence
-export Identity
+export ContinuousHomophily
+export RealPolitics
 
 # Source scripts
 include("db_operations.jl")
