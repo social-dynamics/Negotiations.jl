@@ -67,6 +67,6 @@ struct ContinuousHomophily <: Rule
             end
             return meeting
         end
-        new(get_continuous_homophily_func(inertia))
+        new(update!)
     end
 end
