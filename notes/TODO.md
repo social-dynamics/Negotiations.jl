@@ -7,7 +7,7 @@
 
     * stop criterium (what's a viable coalition?)
     * likelihood estimation
-    * [opinion](opinion) weighting -> incl. how to compute (e.g. similarity?)
+    * opinion weighting -> incl. how to compute (e.g. similarity?)
 
     -> apply to future elections
 
@@ -52,8 +52,8 @@
 * [x] finish new model setup
 * [x] update tests to new workflow
 * [x] streamline up to model runs
+* [x] refactor conforms_to_schema function
 * [ ] inertia as a function of similarity
-* [ ] refactor conforms_to_schema function
 * [ ] weights for opinions
 * [ ] parameter set into database (with batchname as identifier)
 
