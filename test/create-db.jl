@@ -10,9 +10,9 @@ if (!("test.sqlite" in readdir()))
         """
         INSERT INTO party
         VALUES
-            (1, \"TP_1\", \"TESTPARTY_1\"),
-            (2, \"TP_2\", \"TESTPARTY_2\"),
-            (3, \"TP_3\", \"TESTPARTY_3\");
+            (1, \"P1\", \"PARTY_1\"),
+            (2, \"P2\", \"PARTY_2\"),
+            (3, \"P3\", \"PARTY_3\");
         """
     )
 
