@@ -3,7 +3,7 @@
 
 A set of parameters with which the model will be run.
 """
-mutable struct ParameterSet
+Base.@kwdef mutable struct ParameterSet
     group_size::Int
     parliament::AbstractDict
     parliament_size::Int
@@ -13,22 +13,22 @@ mutable struct ParameterSet
 end
 
 
-# Constructor with keyword arguments
-ParameterSet(;
-    group_size,
-    parliament,
-    parliament_size,
-    parliament_majority,
-    required_consensus,
-    parties
-) = ParameterSet(
-    group_size,
-    parliament,
-    parliament_size,
-    parliament_majority,
-    required_consensus,
-    parties
-)
+# # Constructor with keyword arguments
+# ParameterSet(;
+#     group_size,
+#     parliament,
+#     parliament_size,
+#     parliament_majority,
+#     required_consensus,
+#     parties
+# ) = ParameterSet(
+#     group_size,
+#     parliament,
+#     parliament_size,
+#     parliament_majority,
+#     required_consensus,
+#     parties
+# )
 
 
 function Base.show(io::IO, params::ParameterSet)
