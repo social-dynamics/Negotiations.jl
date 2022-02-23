@@ -11,24 +11,11 @@ Base.@kwdef mutable struct ParameterSet
     required_consensus::Float64
     parties::AbstractArray
 end
-
-
-# # Constructor with keyword arguments
-# ParameterSet(;
-#     group_size,
-#     parliament,
-#     parliament_size,
-#     parliament_majority,
-#     required_consensus,
-#     parties
-# ) = ParameterSet(
-#     group_size,
-#     parliament,
-#     parliament_size,
-#     parliament_majority,
-#     required_consensus,
-#     parties
-# )
+# Note on Base.@kwdef:
+#   * macro for automatically creating a constructor with keyword arguments
+#   * apparently, it's not certain whether this will break in the future
+#     (although it seems to be in common use, so it might not)
+#     -> https://discourse.julialang.org/t/what-does-kwdef-do/51973
 
 
 function Base.show(io::IO, params::ParameterSet)

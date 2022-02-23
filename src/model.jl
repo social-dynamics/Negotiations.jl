@@ -31,6 +31,7 @@ function setup_model(params::ParameterSet, db::SQLite.DB)
     return Model(params, agents)
 end
 
+
 """
     create_agents(params::ParameterSet, db::SQLite.DB)
 
